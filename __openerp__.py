@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Board alerts',
+    'description': '''
+Send emails at regular intervals to summarize the contents of a dashboard.
+''',
+    'version': '0.1',
+    'category': 'Tools',
+    'author': 'XCG Consulting',
+    'website': 'http://www.openerp-experts.com/',
+    'depends': [
+        'board',
+    ],
+    'data': [
+    ],
+    'installable': True,
+}
