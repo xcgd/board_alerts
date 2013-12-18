@@ -12,6 +12,7 @@ Send emails at regular intervals to summarize the contents of a dashboard.
         'board',
     ],
     'data': [
+        'data/alert_board.xml',
         'test_action.xml',
     ],
     'installable': True,
