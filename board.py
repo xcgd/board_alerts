@@ -14,9 +14,8 @@ class board_alerts(orm.Model):
         data_obj = self.pool.get('ir.model.data')
         board_view = data_obj.get_object(
             cr, uid,
-            'board',
-            # TODO Register a new board for alerts and use its ID.
-            'board_my_dash_view',
+            'board_alerts',
+            'alert_board',
             context=context
         )
 
