@@ -36,21 +36,45 @@ class board_alerts(orm.Model):
                 # Only care about lists for now.
                 continue
 
-            # Find contents referenced by this "action" tag.
+            act_id = int(action.attrib['name'])
+            act_domain = literal_eval(action.attrib['domain'])
+            act_context = literal_eval(action.attrib['context'])
+
+            # Find the model referenced by this "action" tag.
             act_window = act_window_obj.browse(
                 cr, uid,
-                int(action.attrib['name']),
+                act_id,
                 context=context
             )
             act_model = self.pool.get(act_window.res_model)
+
+            # Get the fields defined by the model.
+            fields = act_model.fields_get(
+                cr, uid,
+                context=act_context
+            )
+
+            #  Get data IDs, according to the domain & context defined in the
+            #  action.
             content_ids = act_model.search(
                 cr, uid,
-                literal_eval(action.attrib['domain']),
-                context=literal_eval(action.attrib['context'])
+                act_domain,
+                context=act_context
             )
-            print content_ids
 
-            # TODO browse content_ids...
+            # Fetch the data.
+            contents = act_model.export_data(
+                cr, uid,
+                content_ids,
+                fields.keys(),
+                context=act_context
+            )
+
+            from pprint import pprint
+            print('Fields: %s' % fields.keys())
+            print('IDs: %s' % content_ids)
+            print('Data:')
+            pprint(contents)
 
 """board_arch example:
 
