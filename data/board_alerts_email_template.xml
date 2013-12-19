@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Default email template for board alert emails. -->
+        <record id="board_alerts_email_template" model="email.template">
+            <!-- TODO Correct the following values... -->
+            <field name="email_from">${object.company_id.name} &lt;${object.company_id.email}&gt;</field>
+            <field name="email_recipients">${object.partner_id.id}</field>
+            <field name="email_to">${object.partner_id.email}</field>
+            <field name="model_id" ref="board_alerts.model_board_board" />
+            <field name="name">Board alert email</field>
+            <field name="subject">Today's alerts</field>
+        </record>
+
+    </data>
+</openerp>
