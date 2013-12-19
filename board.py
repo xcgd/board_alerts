@@ -27,34 +27,62 @@ class board_alerts(orm.Model):
         )['arch']
 
         act_window_obj = self.pool.get('ir.actions.act_window')
+        view_obj = self.pool.get('ir.ui.view')
 
+        # Loop through "action" tags stored inside this custom view.
         tree = etree.fromstring(board_arch)
         for action in tree.xpath('//action'):
 
             if action.attrib['view_mode'] != 'list':
                 # Only care about lists for now.
                 continue
+            view_type = 'tree'
 
+            # Interpret the attributes of the current "action" tag.
             act_id = int(action.attrib['name'])
             act_domain = literal_eval(action.attrib['domain'])
             act_context = literal_eval(action.attrib['context'])
 
-            # Find the model referenced by this "action" tag.
+            # Get the action object pointed to by this "action" tag.
             act_window = act_window_obj.browse(
                 cr, uid,
                 act_id,
                 context=context
             )
+
+            # Get the model referenced by this "action" tag.
             act_model = self.pool.get(act_window.res_model)
 
-            # Get the fields defined by the model.
-            fields = act_model.fields_get(
+            # Find the view referenced by this "action" tag; we take the first
+            # view that matches, which is correct as they are ordered by
+            # priority.
+            act_view_id = view_obj.search(
                 cr, uid,
+                [
+                    ('model', '=', act_window.res_model),
+                    ('type', '=', view_type),
+                ],
+                limit=1,
+                context=act_context,
+            )[0]
+            act_view = act_model.fields_view_get(
+                cr, uid,
+                view_id=act_view_id,
+                view_type=view_type,
                 context=act_context
             )
 
-            #  Get data IDs, according to the domain & context defined in the
-            #  action.
+            # Get the fields required by the view. Use this method so that the
+            # result is similar to what the user sees in her board.
+            act_tree = etree.fromstring(act_view['arch'])
+            fields = [
+                field.attrib['name']
+                for field in act_tree.xpath('//field')
+                if not field.attrib.get('invisible')
+            ]
+
+            # Get data IDs, according to the domain & context defined in the
+            # action.
             content_ids = act_model.search(
                 cr, uid,
                 act_domain,
@@ -65,12 +93,12 @@ class board_alerts(orm.Model):
             contents = act_model.export_data(
                 cr, uid,
                 content_ids,
-                fields.keys(),
+                fields,
                 context=act_context
             )
 
             from pprint import pprint
-            print('Fields: %s' % fields.keys())
+            print('Fields: %s' % fields)
             print('IDs: %s' % content_ids)
             print('Data:')
             pprint(contents)
