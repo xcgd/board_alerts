@@ -10,7 +10,7 @@ class board_alerts(orm.Model):
 
     _inherit = 'board.board'
 
-    def send_board_alerts(self, cr, uid, context=None):
+    def send_board_alerts(self, cr, context=None):
         data_obj = self.pool.get('ir.model.data')
 
         # Use the super-user until we know which user this board is for.
@@ -41,15 +41,18 @@ class board_alerts(orm.Model):
 
         # Switch to the user who has created the board.
         custom_view_obj = self.pool.get('ir.ui.view.custom')
-        uid = custom_view_obj.browse(
+        user = custom_view_obj.browse(
             cr, uid,
             board['custom_view_id'],
             context=context
-        ).user_id.id
+        ).user_id
+        uid = user.id
 
         act_window_obj = self.pool.get('ir.actions.act_window')
         email_template_obj = self.pool.get('email.template')
         view_obj = self.pool.get('ir.ui.view')
+
+        to_send = []
 
         # Loop through "action" tags stored inside this custom view.
         tree = etree.fromstring(board['arch'])
@@ -118,35 +121,34 @@ class board_alerts(orm.Model):
                 fields,
                 context=act_context
             )
-
-            # Send the user an email.
-            email_res = email_template_obj.send_mail(
-                cr, uid,
-                email_template.id,
-                None,
-                force_send=False,
-                context=context
-            )
+            to_send.append(contents)
 
             from pprint import pprint
             print('Fields: %s' % fields)
             print('IDs: %s' % content_ids)
             print('Data:')
             pprint(contents)
-            print('Sent email: %s' % email_res)
 
-"""board_arch example:
+        if not to_send:
+            # TODO Send an empty email when there is nothing to send?
+            return
 
-<form version="7.0" string="My Dashboard">
-        <board style="2-1">
-            <column>
-                <action context="{\'lang\': \'fr_FR\', \'tz\': \'Europe/Paris\', \'uid\': 1, \'dashboard_merge_domains_contexts\': False, \'group_by\': [\'partner_id\'], \'type\': \'payment\'}" domain="[[\'journal_id.type\', \'in\', [\'bank\', \'cash\']], [\'type\', \'=\', \'payment\']]" name="288" string="account.voucher.purchase.pay.select" view_mode="list"/>
-            </column><column>
-                <action context="{\'lang\': \'fr_FR\', \'group_by\': [], \'tz\': \'Europe/Paris\', \'uid\': 1, \'dashboard_merge_domains_contexts\': False}" domain="" name="355" string="Employees" view_mode="kanban"/>
-            </column><column>
-                
-            </column>
-        </board>
-    </form>
+        # Fill the email.
+        email = email_template_obj.generate_email(
+            cr, uid,
+            email_template.id,
+            None,
+            context=context
+        )
+        email['body_html'] = str(to_send)
+        email['email_from'] = 'TODO'  # TODO
+        email['email_to'] = user.email
 
-"""
+        # Send the user an email. Imitate email_template's send_mail but
+        # without the checks (we fill values manually).
+        email.pop('attachments')
+        email.pop('email_recipients')
+        mail_obj = self.pool.get('mail.mail')
+        email_id = mail_obj.create(cr, uid, email, context=context)
+
+        print('Sent email: %s' % email_id)
