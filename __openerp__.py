@@ -10,9 +10,11 @@ Send emails at regular intervals to summarize the contents of a dashboard.
     'website': 'http://www.openerp-experts.com/',
     'depends': [
         'board',
+        'email_template',
     ],
     'data': [
         'data/alert_board.xml',
+        'data/board_alerts_email_template.xml',
         'test_action.xml',
     ],
     'installable': True,

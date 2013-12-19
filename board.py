@@ -2,6 +2,7 @@ from ast import literal_eval
 from lxml import etree
 
 from openerp.osv import orm
+from openerp import SUPERUSER_ID
 
 
 class board_alerts(orm.Model):
@@ -10,8 +11,12 @@ class board_alerts(orm.Model):
     _inherit = 'board.board'
 
     def send_board_alerts(self, cr, uid, context=None):
-        # Boards are stored as views; get the one referenced by the XML ID.
         data_obj = self.pool.get('ir.model.data')
+
+        # Use the super-user until we know which user this board is for.
+        uid = SUPERUSER_ID
+
+        # Boards are stored as views; get the one referenced by the XML ID.
         board_view = data_obj.get_object(
             cr, uid,
             'board_alerts',
@@ -19,18 +24,35 @@ class board_alerts(orm.Model):
             context=context
         )
 
-        # Get XML contents.
-        board_arch = self.fields_view_get(
+        # Get our email template, referenced by its XML ID.
+        email_template = data_obj.get_object(
+            cr, uid,
+            'board_alerts',
+            'board_alerts_email_template',
+            context=context
+        )
+
+        # Get the "custom view" representing the board.
+        board = self.fields_view_get(
             cr, uid,
             view_id=board_view.id,
             context=context
-        )['arch']
+        )
+
+        # Switch to the user who has created the board.
+        custom_view_obj = self.pool.get('ir.ui.view.custom')
+        uid = custom_view_obj.browse(
+            cr, uid,
+            board['custom_view_id'],
+            context=context
+        ).user_id.id
 
         act_window_obj = self.pool.get('ir.actions.act_window')
+        email_template_obj = self.pool.get('email.template')
         view_obj = self.pool.get('ir.ui.view')
 
         # Loop through "action" tags stored inside this custom view.
-        tree = etree.fromstring(board_arch)
+        tree = etree.fromstring(board['arch'])
         for action in tree.xpath('//action'):
 
             if action.attrib['view_mode'] != 'list':
@@ -97,11 +119,21 @@ class board_alerts(orm.Model):
                 context=act_context
             )
 
+            # Send the user an email.
+            email_res = email_template_obj.send_mail(
+                cr, uid,
+                email_template.id,
+                None,
+                force_send=False,
+                context=context
+            )
+
             from pprint import pprint
             print('Fields: %s' % fields)
             print('IDs: %s' % content_ids)
             print('Data:')
             pprint(contents)
+            print('Sent email: %s' % email_res)
 
 """board_arch example:
 
