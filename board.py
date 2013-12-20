@@ -141,7 +141,21 @@ class board_alerts(orm.Model):
                 content_ids,
                 fields,
                 context=act_context
+            )['datas']
+            if not contents:
+                continue
+
+            # Add field names at the top of the list.
+            fields_info = act_model.fields_get(
+                cr, uid,
+                fields,
+                context=context
             )
+            contents.insert(0, [
+                fields_info[field]['string']
+                for field in fields
+            ])
+
             to_send.append(contents)
 
             from pprint import pprint
