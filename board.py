@@ -158,12 +158,6 @@ class board_alerts(orm.Model):
 
             to_send.append(contents)
 
-            from pprint import pprint
-            print('Fields: %s' % fields)
-            print('IDs: %s' % content_ids)
-            print('Data:')
-            pprint(contents)
-
         if not to_send:
             # TODO Send an empty email when there is nothing to send?
             return
@@ -175,8 +169,8 @@ class board_alerts(orm.Model):
             None,
             context=context
         )
-        email['body_html'] = str(to_send)
-        email['email_from'] = 'TODO'  # TODO
+        email['body_html'] = self._get_html(to_send)
+        email['email_from'] = 'TODO@TODO.com'  # TODO
         email['email_to'] = user.email
 
         # Send the user an email. Imitate email_template's send_mail but
@@ -184,6 +178,28 @@ class board_alerts(orm.Model):
         email.pop('attachments')
         email.pop('email_recipients')
         mail_obj = self.pool.get('mail.mail')
-        email_id = mail_obj.create(cr, SUPERUSER_ID, email, context=context)
+        mail_obj.create(cr, SUPERUSER_ID, email, context=context)
 
-        print('Sent email: %s' % email_id)
+    def _get_html(self, data_list):
+        root = etree.Element('div')
+
+        for data in data_list:
+            table = etree.SubElement(root, 'table')
+
+            first_record = True
+
+            for record in data:
+                row = etree.SubElement(table, 'tr')
+
+                if first_record:
+                    first_record = False
+                    row.attrib['style'] = 'font-weight: bolder;'
+
+                for field in record:
+                    cell = etree.SubElement(row, 'td')
+                    cell.text = (
+                        field if isinstance(field, basestring)
+                        else str(field)
+                    )
+
+        return etree.tostring(root, pretty_print=True)
