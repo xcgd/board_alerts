@@ -10,11 +10,12 @@ class board_alerts(orm.Model):
 
     _inherit = 'board.board'
 
-    def send_board_alerts(self, cr, context=None):
-        data_obj = self.pool.get('ir.model.data')
+    def send_board_alerts(self, cr, uid, context=None):
+        """Set up preliminary data, find users and let
+        send_board_alerts_per_user handle the rest.
+        """
 
-        # Use the super-user until we know which user this board is for.
-        uid = SUPERUSER_ID
+        data_obj = self.pool.get('ir.model.data')
 
         # Boards are stored as views; get the one referenced by the XML ID.
         board_view = data_obj.get_object(
@@ -32,21 +33,41 @@ class board_alerts(orm.Model):
             context=context
         )
 
+        # Loop through all users.
+        user_obj = self.pool.get('res.users')
+        user_ids = user_obj.search(cr, uid, [], context=context)
+        users = user_obj.browse(cr, uid, user_ids, context=context)
+
+        for user in users:
+            self._send_board_alerts_per_user(
+                cr,
+                user,
+                board_view,
+                email_template,
+                context=context
+            )
+
+    def _send_board_alerts_per_user(
+        self,
+        cr,
+        user,
+        board_view,
+        email_template,
+        context=None
+    ):
+        """A board is stored as a custom view; read it, find the actions it
+        points to, get the models and views referenced by these actions and
+        fetch the data. Then send that data (properly formatted) by email.
+        """
+
+        uid = user.id
+
         # Get the "custom view" representing the board.
         board = self.fields_view_get(
             cr, uid,
             view_id=board_view.id,
             context=context
         )
-
-        # Switch to the user who has created the board.
-        custom_view_obj = self.pool.get('ir.ui.view.custom')
-        user = custom_view_obj.browse(
-            cr, uid,
-            board['custom_view_id'],
-            context=context
-        ).user_id
-        uid = user.id
 
         act_window_obj = self.pool.get('ir.actions.act_window')
         email_template_obj = self.pool.get('email.template')
@@ -149,6 +170,6 @@ class board_alerts(orm.Model):
         email.pop('attachments')
         email.pop('email_recipients')
         mail_obj = self.pool.get('mail.mail')
-        email_id = mail_obj.create(cr, uid, email, context=context)
+        email_id = mail_obj.create(cr, SUPERUSER_ID, email, context=context)
 
         print('Sent email: %s' % email_id)

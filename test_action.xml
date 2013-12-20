@@ -12,7 +12,7 @@
             <field name="model_id" ref="model_board_board" />
             <field name="state">code</field>
             <field name="code"><![CDATA[
-action = pool.get('board.board').send_board_alerts(cr, context=context)
+action = pool.get('board.board').send_board_alerts(cr, uid, context=context)
             ]]></field>
         </record>
 
