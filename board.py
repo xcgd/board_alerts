@@ -88,6 +88,7 @@ class board_alerts(orm.Model):
             act_id = int(action.attrib['name'])
             act_domain = literal_eval(action.attrib['domain'])
             act_context = literal_eval(action.attrib['context'])
+            act_title = action.attrib['string']
 
             # Get the action object pointed to by this "action" tag.
             act_window = act_window_obj.browse(
@@ -156,7 +157,7 @@ class board_alerts(orm.Model):
                 for field in fields
             ])
 
-            to_send.append(contents)
+            to_send.append((act_title, contents))
 
         if not to_send:
             # TODO Send an empty email when there is nothing to send?
@@ -183,7 +184,11 @@ class board_alerts(orm.Model):
     def _get_html(self, data_list):
         root = etree.Element('div')
 
-        for data in data_list:
+        for data_title, data in data_list:
+            title = etree.SubElement(root, 'p')
+            title.attrib['style'] = 'font-weight: bolder;'
+            title.text = data_title or u''
+
             table = etree.SubElement(root, 'table')
 
             first_record = True
