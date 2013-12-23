@@ -24,22 +24,6 @@
             </field>
         </record>
 
-        <record id="board_alerts_dlg_done" model="ir.ui.view">
-            <field name="name">Send board alerts</field>
-            <field name="model">board_alerts_dlg</field>
-            <field name="arch" type="xml">
-                <form string="Send board alerts" version="7.0">
-
-                    <label string="Board alert emails have been successfully sent." />
-
-                    <footer>
-                        <button string="Close" class="oe_link" special="cancel" />
-                    </footer>
-
-                </form>
-            </field>
-        </record>
-
         <record id="action_board_alerts_dlg" model="ir.actions.act_window">
             <field name="name">Send board alerts</field>
             <field name="type">ir.actions.act_window</field>

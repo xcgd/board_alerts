@@ -1,5 +1,4 @@
 from openerp.osv import orm
-from openerp.tools.translate import _
 
 
 class board_alerts_dlg(orm.TransientModel):
@@ -14,23 +13,22 @@ class board_alerts_dlg(orm.TransientModel):
             cr, uid, context=context
         )
 
-        this = self.browse(cr, uid, ids)[0]
-
+        # Find the action launched by the "Emails" menu command.
         data_obj = self.pool.get('ir.model.data')
-        done_view = data_obj.get_object(
+        emails_action = data_obj.get_object(
             cr, uid,
-            'board_alerts',
-            'board_alerts_dlg_done',
+            'mail',
+            'menu_mail_mail',
             context=context
-        )
+        ).action
 
         return {
-            'name': _('Send board alerts'),
-            'res_id': this.id,
-            'res_model': 'board_alerts_dlg',
-            'target': 'new',
-            'type': 'ir.actions.act_window',
-            'view_id': done_view.id,
-            'view_mode': 'form',
-            'view_type': 'form',
+            'context': emails_action.context,
+            'name': emails_action.name,
+            'res_model': emails_action.res_model,
+            'search_view_id': emails_action.search_view_id.id,
+            'target': emails_action.target,
+            'type': emails_action.type,
+            'view_mode': emails_action.view_mode,
+            'view_type': emails_action.view_type,
         }
