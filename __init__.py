@@ -1,3 +1,3 @@
-import board
+import board_alerts
 
 import wizard
