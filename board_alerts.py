@@ -2,6 +2,7 @@ from ast import literal_eval
 from lxml import etree
 
 from openerp.osv import orm
+from openerp.tools.translate import _
 from openerp import SUPERUSER_ID
 
 
@@ -25,6 +26,24 @@ class board_alerts(orm.Model):
             context=context
         )
 
+        # Set up the link that will be inserted in emails.
+        param_obj = self.pool.get('ir.config_parameter')
+        board_link = param_obj.get_param(
+            cr, uid,
+            'web.base.url',
+            context=context
+        )
+        if board_link:
+            board_link += '/?db=%s#action=%s' % (
+                cr.dbname,
+                str(data_obj.get_object(
+                    cr, uid,
+                    'board_alerts',
+                    'action_alert_board',
+                    context=context
+                ).id)
+            )
+
         # Get our email template, referenced by its XML ID.
         email_template = data_obj.get_object(
             cr, uid,
@@ -43,6 +62,7 @@ class board_alerts(orm.Model):
                 cr,
                 user,
                 board_view,
+                board_link,
                 email_template,
                 context=context
             )
@@ -52,6 +72,7 @@ class board_alerts(orm.Model):
         cr,
         user,
         board_view,
+        board_link,
         email_template,
         context=None
     ):
@@ -167,7 +188,7 @@ class board_alerts(orm.Model):
             None,
             context=context
         )
-        email['body_html'] = self._get_html(to_send)
+        email['body_html'] = self._get_html(to_send, board_link)
         email['email_from'] = '%s <%s>' % (
             user.company_id.name or u'',
             user.company_id.email or u''
@@ -181,8 +202,13 @@ class board_alerts(orm.Model):
         mail_obj = self.pool.get('mail.mail')
         mail_obj.create(cr, SUPERUSER_ID, email, context=context)
 
-    def _get_html(self, data_list):
+    def _get_html(self, data_list, board_link):
         root = etree.Element('div')
+
+        if board_link:
+            link = etree.SubElement(root, 'a')
+            link.attrib['href'] = board_link
+            link.text = _('My Alerts')
 
         for data_title, data in data_list:
             title = etree.SubElement(root, 'p')
