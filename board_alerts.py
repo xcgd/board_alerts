@@ -142,9 +142,7 @@ class board_alerts(orm.Model):
                 content_ids,
                 fields,
                 context=act_context
-            )['datas']
-            if not contents:
-                continue
+            )['datas'] or []
 
             # Add field names at the top of the list.
             fields_info = act_model.fields_get(
@@ -160,7 +158,6 @@ class board_alerts(orm.Model):
             to_send.append((act_title, contents))
 
         if not to_send:
-            # TODO Send an empty email when there is nothing to send?
             return
 
         # Fill the email.
