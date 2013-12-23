@@ -1,1 +1,3 @@
 import board
+
+import wizard
