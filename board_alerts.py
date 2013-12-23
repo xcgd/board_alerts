@@ -168,7 +168,10 @@ class board_alerts(orm.Model):
             context=context
         )
         email['body_html'] = self._get_html(to_send)
-        email['email_from'] = 'TODO@TODO.com'  # TODO
+        email['email_from'] = '%s <%s>' % (
+            user.company_id.name or u'',
+            user.company_id.email or u''
+        )
         email['email_to'] = user.email
 
         # Send the user an email. Imitate email_template's send_mail but
