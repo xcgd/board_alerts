@@ -15,6 +15,7 @@ Send emails at regular intervals to summarize the contents of a dashboard.
     'data': [
         'data/alert_board.xml',
         'data/board_alerts_email_template.xml',
+        'data/board_alerts_cron_task.xml',
         'wizard/board_alerts_dlg.xml',
     ],
     'installable': True,
