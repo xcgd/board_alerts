@@ -206,16 +206,26 @@ class board_alerts(orm.Model):
         root = etree.Element('div')
 
         if board_link:
-            link = etree.SubElement(root, 'a')
+            link = etree.SubElement(etree.SubElement(root, 'h2'), 'a')
             link.attrib['href'] = board_link
             link.text = _('My Alerts')
 
         for data_title, data in data_list:
-            title = etree.SubElement(root, 'p')
-            title.attrib['style'] = 'font-weight: bolder;'
+            frame = etree.SubElement(root, 'div')
+            frame.attrib['style'] = (
+                'border: 1px solid LightGray;'
+                'margin-top: 8px;'
+                'padding: 8px;'
+            )
+
+            title = etree.SubElement(frame, 'h3')
             title.text = data_title or u''
 
-            table = etree.SubElement(root, 'table')
+            table = etree.SubElement(frame, 'table')
+            table.attrib['style'] = (
+                'border-collapse: collapse;'
+                'border-spacing: 2px;'
+            )
 
             first_record = True
 
@@ -224,10 +234,14 @@ class board_alerts(orm.Model):
 
                 if first_record:
                     first_record = False
-                    row.attrib['style'] = 'font-weight: bolder;'
+                    row.attrib['style'] = (
+                        'background-color: LightGray;'
+                        'font-weight: bolder;'
+                    )
 
                 for field in record:
                     cell = etree.SubElement(row, 'td')
+                    cell.attrib['style'] = 'padding: 3px 6px;'
                     cell.text = (
                         field if isinstance(field, basestring)
                         else str(field)
