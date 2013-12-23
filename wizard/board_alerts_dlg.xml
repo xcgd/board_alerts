@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- Dialog shown before manually sending board alert emails, to have some 
+            kind of confirmation. -->
+
+        <record id="board_alerts_dlg" model="ir.ui.view">
+            <field name="name">Send board alerts</field>
+            <field name="model">board_alerts_dlg</field>
+            <field name="arch" type="xml">
+                <form string="Send board alerts" version="7.0">
+
+                    <footer>
+                        <separator
+                            string="Warning! Emails will be sent when clicking on the red button." />
+
+                        <button string="Send board alerts" name="send_board_alerts"
+                            type="object" class="oe_highlight" />
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="board_alerts_dlg_done" model="ir.ui.view">
+            <field name="name">Send board alerts</field>
+            <field name="model">board_alerts_dlg</field>
+            <field name="arch" type="xml">
+                <form string="Send board alerts" version="7.0">
+
+                    <label string="Board alert emails have been successfully sent." />
+
+                    <footer>
+                        <button string="Close" class="oe_link" special="cancel" />
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="action_board_alerts_dlg" model="ir.actions.act_window">
+            <field name="name">Send board alerts</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">board_alerts_dlg</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="board_alerts_dlg" />
+            <field name="target">new</field>
+        </record>
+
+        <menuitem name="Send board alerts" action="action_board_alerts_dlg"
+            id="menu_board_alerts_dlg" parent="base.menu_reporting_config"
+            groups="base.group_no_one" sequence="10" />
+    </data>
+</openerp>
