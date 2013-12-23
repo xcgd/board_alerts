@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Cron task to send board alert emails every morning at 07H00. -->
+
+        <record id="board_alerts_cron_task" model="ir.cron">
+            <field name="args">()</field>
+            <field name="doall" eval="False" />
+            <field name="function">send_board_alerts</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="model">board.board</field>
+            <field name="name">Board alerts - Daily emails</field>
+            <field name="nextcall"
+                eval="time.strftime('%Y-%m-%d 07:00:00', time.localtime(time.time() + 24 * 3600))" />
+            <field name="numbercall">-1</field>
+        </record>
+
+    </data>
+</openerp>
