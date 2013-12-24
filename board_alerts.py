@@ -188,7 +188,10 @@ class board_alerts(orm.Model):
             None,
             context=context
         )
-        email['body_html'] = self._get_html(to_send, board_link)
+        email['body_html'] = email['body_html'] % {
+            'recipient': user.name,
+            'contents': self._get_html(to_send, board_link),
+        }
         email['email_from'] = '%s <%s>' % (
             user.company_id.name or u'',
             user.company_id.email or u''
