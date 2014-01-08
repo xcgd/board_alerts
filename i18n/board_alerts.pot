@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-24 09:05+0000\n"
-"PO-Revision-Date: 2013-12-24 09:05+0000\n"
+"POT-Creation-Date: 2014-01-08 12:59+0000\n"
+"PO-Revision-Date: 2014-01-08 12:59+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -53,6 +53,23 @@ msgstr ""
 #. module: board_alerts
 #: model:ir.model,name:board_alerts.model_board_board
 msgid "Board"
+msgstr ""
+
+#. module: board_alerts
+#: model:ir.actions.act_window,help:board_alerts.action_alert_board
+msgid "<div class=\"oe_empty_custom_dashboard\">\n"
+"                  <p>\n"
+"                    <b>Your alert dashboard is empty.</b>\n"
+"                  </p><p>\n"
+"                    To add your first report into this dashboard, go to any\n"
+"                    menu, switch to list or graph view, and click <i>'Add to\n"
+"                    Dashboard'</i> in the extended search options.\n"
+"                  </p><p>\n"
+"                    You can filter and group data before inserting into the\n"
+"                    dashboard using the search options.\n"
+"                  </p>\n"
+"              </div>\n"
+"            "
 msgstr ""
 
 #. module: board_alerts
