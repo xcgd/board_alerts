@@ -4,7 +4,7 @@
     'description': '''
 Send emails at regular intervals to summarize the contents of a dashboard.
 ''',
-    'version': '0.1',
+    'version': '1.0',
     'category': 'Tools',
     'author': 'XCG Consulting',
     'website': 'http://www.openerp-experts.com/',
