@@ -15,11 +15,11 @@
 
 * First, create your alert:
 
-![Create](/img/board_alerts.png)
+![Create](static/src/img/board_view_odoo.png)
 
 * Then, see your alerts in Odoo/OpenERP:
 
-![Show](/img/board_alerts1.png)
+![Show](static/src/img/dashboard_odoo.png)
 
 * Finally, receive your own alerts by Email every morning.
 
