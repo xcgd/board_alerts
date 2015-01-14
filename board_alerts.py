@@ -164,6 +164,12 @@ class board_alerts(orm.Model):
                 fields,
                 context=act_context
             )['datas'] or []
+            
+            # Do not send empty content
+            if not contents:
+                # XXX Maybe change to a message.
+                # XXX Probably add an option to send the message or not 
+                continue
 
             # Add field names at the top of the list.
             fields_info = act_model.fields_get(
