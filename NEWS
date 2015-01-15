@@ -1,3 +1,7 @@
+board_alerts 1.1
+
+Production release
+
 board_alerts 1.0.2
 
 - Avoid sending empty table in the mail
