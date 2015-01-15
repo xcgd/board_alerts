@@ -1,8 +1,16 @@
-board_alerts 1.1
+Version 1.1.1
 
-Production release
+* The board alert email template is now defined on "user" objects instead of "board" objects.
+This makes the email template more regular; in particular, the "preview" feature works.
 
-board_alerts 1.0.2
+Update note: Delete the board alert email template and the board alert cron task before updating.
 
-- Avoid sending empty table in the mail
 
+Version 1.1
+
+* Production release.
+
+
+Version 1.0.2
+
+* Avoid sending empty tables in alert emails.
