@@ -2,21 +2,19 @@
 <openerp>
     <data noupdate="1">
 
-        <!-- Default email template for board alert emails. Only the body will be 
-            used; the rest (sender, recipient, etc) will be filled dynamically. -->
-
-        <!-- The body must contain the following variables:
-            - %(recipient)s
-            - %(contents)s
-        -->
+        <!-- Default email template for board alert emails. -->
 
         <record id="board_alerts_email_template" model="email.template">
             <field name="body_html"><![CDATA[
-                <p>Hello %(recipient)s,</p>
+                <p>Hello ${ object.name },</p>
                 <p>Here follow your alerts for today.</p>
-                <div>%(contents)s</div>
+                <div>${ object.get_board_alert_contents() | safe }</div>
             ]]></field>
-            <field name="model_id" ref="board_alerts.model_board_board" />
+            <field name="email_from">${ object.company_id.name or '' } &lt;${ object.company_id.email or '' }&gt;</field>
+            <field name="email_recipients">${ object.partner_id.id }</field>
+            <field name="email_to">${ object.email }</field>
+            <field name="lang">${ object.partner_id.lang.code }</field>
+            <field name="model_id" ref="base.model_res_users" />
             <field name="name">Board alert email</field>
             <field name="subject">Today's alerts</field>
         </record>

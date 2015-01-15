@@ -1,22 +1,81 @@
 from ast import literal_eval
 from lxml import etree
 
+from openerp import exceptions
+from openerp import SUPERUSER_ID
 from openerp.osv import orm
 from openerp.tools.translate import _
-from openerp import SUPERUSER_ID
 
 
 class board_alerts(orm.Model):
-    """Inherit from board.board to allow sending email alerts."""
+    """Inherit from res.users to allow sending email alerts."""
 
-    _inherit = 'board.board'
+    _inherit = 'res.users'
 
     def send_board_alerts(self, cr, uid, context=None):
-        """Set up preliminary data, find users and let
-        send_board_alerts_per_user handle the rest.
+        """Find users and send them their board alerts.
         """
 
-        data_obj = self.pool.get('ir.model.data')
+        data_obj = self.pool['ir.model.data']
+        email_template_obj = self.pool['email.template']
+
+        # Get our email template, referenced by its XML ID.
+        email_template_id = data_obj.get_object(
+            cr, SUPERUSER_ID,
+            'board_alerts',
+            'board_alerts_email_template',
+            context=context
+        ).id
+
+        # Loop through all users; send them an email.
+        for user_id in self.search(cr, SUPERUSER_ID, [], context=context):
+
+            # Don't send an email when there is no content.
+            contents = self.get_board_alert_contents(
+                cr, uid, [user_id], context
+            )
+            if not contents:
+                continue
+
+            # Fill the context to avoid computing contents twice.
+            email_context = context.copy() if context else {}
+            email_context['board_alert_contents'] = contents
+
+            email_template_obj.send_mail(
+                cr, SUPERUSER_ID,
+                email_template_id,
+                user_id,
+                context=email_context
+            )
+
+    def get_board_alert_contents(self, cr, uid, ids, context=None):
+        """Get the HTML content to be put inside a board alert email.
+        A board is stored as a custom view; read it, find the actions it
+        points to, get the models and views referenced by these actions and
+        fetch the data.
+        @rtype: String if there is content, else None.
+        """
+
+        if not isinstance(ids, list):
+            ids = [ids]
+        if len(ids) != 1:
+            raise exceptions.Warning(
+                'board_alerts: Only 1 ID expected in the '
+                '"get_board_alert_contents" function.'
+            )
+
+        if context:
+            prev_contents = context.get('board_alert_contents')
+            if prev_contents:
+                return prev_contents
+
+        uid = ids[0]
+
+        act_window_obj = self.pool['ir.actions.act_window']
+        board_obj = self.pool['board.board']
+        data_obj = self.pool['ir.model.data']
+        param_obj = self.pool['ir.config_parameter']
+        view_obj = self.pool['ir.ui.view']
 
         # Boards are stored as views; get the one referenced by the XML ID.
         board_view = data_obj.get_object(
@@ -27,7 +86,6 @@ class board_alerts(orm.Model):
         )
 
         # Set up the link that will be inserted in emails.
-        param_obj = self.pool.get('ir.config_parameter')
         board_link = param_obj.get_param(
             cr, uid,
             'web.base.url',
@@ -44,55 +102,12 @@ class board_alerts(orm.Model):
                 ).id)
             )
 
-        # Get our email template, referenced by its XML ID.
-        email_template = data_obj.get_object(
-            cr, uid,
-            'board_alerts',
-            'board_alerts_email_template',
-            context=context
-        )
-
-        # Loop through all users.
-        user_obj = self.pool.get('res.users')
-        user_ids = user_obj.search(cr, uid, [], context=context)
-        users = user_obj.browse(cr, uid, user_ids, context=context)
-
-        for user in users:
-            self._send_board_alerts_per_user(
-                cr,
-                user,
-                board_view,
-                board_link,
-                email_template,
-                context=context
-            )
-
-    def _send_board_alerts_per_user(
-        self,
-        cr,
-        user,
-        board_view,
-        board_link,
-        email_template,
-        context=None
-    ):
-        """A board is stored as a custom view; read it, find the actions it
-        points to, get the models and views referenced by these actions and
-        fetch the data. Then send that data (properly formatted) by email.
-        """
-
-        uid = user.id
-
         # Get the "custom view" representing the board.
-        board = self.fields_view_get(
+        board = board_obj.fields_view_get(
             cr, uid,
             view_id=board_view.id,
             context=context
         )
-
-        act_window_obj = self.pool.get('ir.actions.act_window')
-        email_template_obj = self.pool.get('email.template')
-        view_obj = self.pool.get('ir.ui.view')
 
         to_send = []
 
@@ -164,11 +179,11 @@ class board_alerts(orm.Model):
                 fields,
                 context=act_context
             )['datas'] or []
-            
+
             # Do not send empty content
             if not contents:
                 # XXX Maybe change to a message.
-                # XXX Probably add an option to send the message or not 
+                # XXX Probably add an option to send the message or not
                 continue
 
             # Add field names at the top of the list.
@@ -187,31 +202,15 @@ class board_alerts(orm.Model):
         if not to_send:
             return
 
-        # Fill the email.
-        email = email_template_obj.generate_email(
-            cr, uid,
-            email_template.id,
-            None,
-            context=context
-        )
-        email['body_html'] = email['body_html'] % {
-            'recipient': user.name,
-            'contents': self._get_html(to_send, board_link),
-        }
-        email['email_from'] = '%s <%s>' % (
-            user.company_id.name or u'',
-            user.company_id.email or u''
-        )
-        email['email_to'] = user.email
+        return self._data_list_to_email_html(to_send, board_link, context)
 
-        # Send the user an email. Imitate email_template's send_mail but
-        # without the checks (we fill values manually).
-        email.pop('attachments')
-        email.pop('email_recipients')
-        mail_obj = self.pool.get('mail.mail')
-        mail_obj.create(cr, SUPERUSER_ID, email, context=context)
+    def _data_list_to_email_html(self, data_list, board_link, context):
+        """Convert a data list to HTML code suitable for an email.
+        @rtype: String.
+        """
 
-    def _get_html(self, data_list, board_link):
+        # The "context" parameter is required for translations to work.
+
         root = etree.Element('div')
 
         if board_link:
