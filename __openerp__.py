@@ -23,7 +23,7 @@
     'description': '''
 Send emails at regular intervals to summarize the contents of a dashboard.
 ''',
-    'version': '1.1.1',
+    'version': '1.2',
     'category': 'Tools',
     'author': 'XCG Consulting',
     'website': 'http://odoo.consulting/',
