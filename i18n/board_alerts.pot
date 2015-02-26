@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-08 12:59+0000\n"
-"PO-Revision-Date: 2014-01-08 12:59+0000\n"
+"POT-Creation-Date: 2015-02-26 11:56+0000\n"
+"PO-Revision-Date: 2015-02-26 11:56+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,16 +16,12 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: board_alerts
-#: model:email.template,body_html:board_alerts.board_alerts_email_template
-msgid "\n"
-"                <p>Hello %(recipient)s,</p>\n"
-"                <p>Here follow your alerts for today.</p>\n"
-"                <div>%(contents)s</div>\n"
-"            "
+#: model:ir.model,name:board_alerts.model_res_users
+msgid "Users"
 msgstr ""
 
 #. module: board_alerts
-#: code:addons/board_alerts/board_alerts.py:214
+#: code:addons/board_alerts/board_alerts.py:219
 #: view:board.board:0
 #: model:ir.actions.act_window,name:board_alerts.action_alert_board
 #: model:ir.ui.menu,name:board_alerts.menu_alert_board
@@ -46,13 +42,17 @@ msgid "Today's alerts"
 msgstr ""
 
 #. module: board_alerts
-#: model:ir.model,name:board_alerts.model_board_alerts_dlg
-msgid "board_alerts_dlg"
+#: model:email.template,body_html:board_alerts.board_alerts_email_template
+msgid "\n"
+"                <p>Hello ${ object.name },</p>\n"
+"                <p>Here follow your alerts for today.</p>\n"
+"                <div>${ object.get_board_alert_contents() | safe }</div>\n"
+"            "
 msgstr ""
 
 #. module: board_alerts
-#: model:ir.model,name:board_alerts.model_board_board
-msgid "Board"
+#: model:ir.model,name:board_alerts.model_board_alerts_dlg
+msgid "board_alerts_dlg"
 msgstr ""
 
 #. module: board_alerts
