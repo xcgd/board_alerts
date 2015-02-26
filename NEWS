@@ -1,4 +1,15 @@
-Version 1.1.1
+board_alerts 1.3
+~~~~~~~~~~~~~~~~
+
+* [TKT/2015/01414] Fix issue with user language not used correctly on default alert mail template
+
+board_alerts 1.2
+~~~~~~~~~~~~~~~~
+
+Production release
+
+board_alerts 1.1.1
+~~~~~~~~~~~~~~~~~~
 
 * The board alert email template is now defined on "user" objects instead of "board" objects.
 This makes the email template more regular; in particular, the "preview" feature works.
@@ -6,11 +17,13 @@ This makes the email template more regular; in particular, the "preview" feature
 Update note: Delete the board alert email template and the board alert cron task before updating.
 
 
-Version 1.1
+board_alerts 1.1
+~~~~~~~~~~~~~~~~ 
 
-* Production release.
+Production release
 
 
 Version 1.0.2
+~~~~~~~~~~~~~
 
 * Avoid sending empty tables in alert emails.
