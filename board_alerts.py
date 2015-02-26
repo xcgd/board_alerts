@@ -1,3 +1,22 @@
+###############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2013, 2015 XCG Consulting (http://www.xcg-consulting.fr/)
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
 from ast import literal_eval
 from lxml import etree
 
@@ -68,8 +87,15 @@ class board_alerts(orm.Model):
             prev_contents = context.get('board_alert_contents')
             if prev_contents:
                 return prev_contents
+            context = context.copy()
 
         uid = ids[0]
+
+        # Inject lang/tz in context for correct l10n
+        user_br = self.browse(cr, SUPERUSER_ID, uid, context)
+        context['lang'] = user_br.lang
+        context['tz'] = user_br.tz
+        context['uid'] = uid
 
         act_window_obj = self.pool['ir.actions.act_window']
         board_obj = self.pool['board.board']
@@ -172,7 +198,7 @@ class board_alerts(orm.Model):
                 context=act_context
             )
 
-            # Fetch the data.
+            # Fetch the data
             contents = act_model.export_data(
                 cr, uid,
                 content_ids,
