@@ -189,6 +189,11 @@ class board_alerts(orm.Model):
                 for field in act_tree.xpath('//field')
                 if not field.attrib.get('invisible')
             ]
+            fields_info = act_model.fields_get(
+                cr, uid,
+                fields,
+                context=context
+            )
 
             # Get data IDs, according to the domain & context defined in the
             # action.
@@ -198,30 +203,32 @@ class board_alerts(orm.Model):
                 context=act_context
             )
 
+            # Add field names at the top of the list.
+            contents = [[fields_info[field]['string'] for field in fields]]
+
             # Fetch the data
-            contents = act_model.export_data(
+            content_data_list = act_model.browse(
                 cr, uid,
                 content_ids,
-                fields,
                 context=act_context
-            )['datas'] or []
+            ) or []
+            contents += [
+                [
+                    self._format_content(
+                        getattr(content_data, field),
+                        fields_info[field],
+                        context
+                    )
+                    for field in fields
+                ]
+                for content_data in content_data_list
+            ]
 
             # Do not send empty content
             if not contents:
                 # XXX Maybe change to a message.
                 # XXX Probably add an option to send the message or not
                 continue
-
-            # Add field names at the top of the list.
-            fields_info = act_model.fields_get(
-                cr, uid,
-                fields,
-                context=context
-            )
-            contents.insert(0, [
-                fields_info[field]['string']
-                for field in fields
-            ])
 
             to_send.append((act_title, contents))
 
@@ -276,9 +283,48 @@ class board_alerts(orm.Model):
                 for field in record:
                     cell = etree.SubElement(row, 'td')
                     cell.attrib['style'] = 'padding: 3px 6px;'
-                    cell.text = (
-                        field if isinstance(field, basestring)
-                        else str(field)
-                    )
+                    cell.text = field
 
         return etree.tostring(root, pretty_print=True)
+
+    def _format_content(self, content, field_info, context):
+        """Stringify the specified field value, taking care of translations and
+        fetching related names.
+        @type content: Odoo browse-record object.
+        @param field_info: Odoo field information.
+        @rtype: String.
+        """
+
+        # Delegate to per-type functions.
+        return getattr(
+            self, '_format_content_%s' % field_info['type'], lambda *a: ''
+        )(
+            content, field_info, context
+        )
+
+    def _format_content_boolean(self, content, field_info, context):
+        return _('Yes') if content else _('No')
+
+    def _format_content_char(self, content, field_info, context):
+        return content
+
+    def _format_content_float(self, content, field_info, context):
+        return str(content)
+
+    def _format_content_integer(self, content, field_info, context):
+        return str(content)
+
+    def _format_content_selection(self, content, field_info, context):
+        if not content:
+            return ''
+        return dict(field_info['selection']).get(content, '')
+
+    def _format_content_many2one(self, content, field_info, context):
+        if not content:
+            return ''
+        # 0: first element of the returned list.
+        # 1: second element of the (ID, name) tuple.
+        return content.name_get()[0][1]
+
+    def _format_content_text(self, content, field_info, context):
+        return content
