@@ -17,12 +17,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+
 from ast import literal_eval
+import datetime
 from lxml import etree
 
 from openerp import exceptions
 from openerp import SUPERUSER_ID
 from openerp.osv import orm
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
 
 
@@ -82,20 +86,16 @@ class board_alerts(orm.Model):
                 'board_alerts: Only 1 ID expected in the '
                 '"get_board_alert_contents" function.'
             )
-
-        if context:
-            prev_contents = context.get('board_alert_contents')
-            if prev_contents:
-                return prev_contents
-            context = context.copy()
-
         uid = ids[0]
 
-        # Inject lang/tz in context for correct l10n
-        user_br = self.browse(cr, SUPERUSER_ID, uid, context)
-        context['lang'] = user_br.lang
-        context['tz'] = user_br.tz
-        context['uid'] = uid
+        if not context:
+            context = {}
+
+        prev_contents = context.get('board_alert_contents')
+        if prev_contents:
+            return prev_contents
+
+        context = self._default_context(cr, uid, context)
 
         act_window_obj = self.pool['ir.actions.act_window']
         board_obj = self.pool['board.board']
@@ -287,11 +287,47 @@ class board_alerts(orm.Model):
 
         return etree.tostring(root, pretty_print=True)
 
+    def _default_context(self, cr, uid, context):
+        """Get an Odoo context, adapted to the specified user. Contains
+        additional values the "_format_content" function expects.
+        """
+
+        ret = context.copy()
+
+        lang_obj = self.pool['res.lang']
+
+        user = self.browse(cr, SUPERUSER_ID, [uid], context=context)[0]
+
+        # The user object only has a "lang" selection key; find the actual
+        # language object.
+        lang_ids = lang_obj.search(
+            cr, SUPERUSER_ID,
+            [('code', '=', user.lang)],
+            limit=1,
+            context=context
+        )
+        if not lang_ids:
+            raise exceptions.Warning(_('Lang %s not found') % user.lang)
+        lang = lang_obj.browse(cr, SUPERUSER_ID, lang_ids, context=context)[0]
+
+        ret.update({
+            'date_format': lang.date_format,
+            'datetime_format': '%s %s' % (lang.date_format, lang.time_format),
+            'lang': user.lang,
+            'tz': user.tz,
+            'uid': uid,
+        })
+
+        return ret
+
     def _format_content(self, content, field_info, context):
         """Stringify the specified field value, taking care of translations and
         fetching related names.
         @type content: Odoo browse-record object.
         @param field_info: Odoo field information.
+        @param context: Odoo context; must define the following:
+            * date_format.
+            * datetime_format.
         @rtype: String.
         """
 
@@ -308,13 +344,31 @@ class board_alerts(orm.Model):
         return _('Yes') if content else _('No')
 
     def _format_content_char(self, content, field_info, context):
-        return content
+        return content or ''
+
+    def _format_content_date(self, content, field_info, context):
+        if not content:
+            return ''
+        return (
+            datetime.datetime.strptime(content, DEFAULT_SERVER_DATE_FORMAT)
+            .strftime(context['date_format'])
+        )
+
+    def _format_content_datetime(self, content, field_info, context):
+        if not content:
+            return ''
+        return (
+            datetime.datetime.strptime(content, DEFAULT_SERVER_DATETIME_FORMAT)
+            .strftime(context['datetime_format'])
+        )
 
     def _format_content_float(self, content, field_info, context):
-        return str(content)
+        # TODO Better float formatting (see report_sxw:digits_fmt,
+        # report_sxw:get_digits for details.
+        return str(content or 0.0)
 
     def _format_content_integer(self, content, field_info, context):
-        return str(content)
+        return str(content or 0)
 
     def _format_content_selection(self, content, field_info, context):
         if not content:
@@ -329,4 +383,4 @@ class board_alerts(orm.Model):
         return content.name_get()[0][1]
 
     def _format_content_text(self, content, field_info, context):
-        return content
+        return content or ''
