@@ -370,6 +370,26 @@ class board_alerts(orm.Model):
     def _format_content_integer(self, content, field_info, context):
         return str(content or 0)
 
+    def _format_content_many2many(self, content, field_info, context):
+        if not content:
+            return ''
+        # TODO Simplify the following when a method can be executed on a
+        # "browse_record_list" object (see the TODO near its declaration).
+        return ', '.join(
+            self._get_object_name(linked_content, context)
+            for linked_content in content
+        )
+
+    def _format_content_one2many(self, content, field_info, context):
+        if not content:
+            return ''
+        # TODO Simplify the following when a method can be executed on a
+        # "browse_record_list" object (see the TODO near its declaration).
+        return ', '.join(
+            self._get_object_name(linked_content, context)
+            for linked_content in content
+        )
+
     def _format_content_selection(self, content, field_info, context):
         if not content:
             return ''
@@ -378,9 +398,16 @@ class board_alerts(orm.Model):
     def _format_content_many2one(self, content, field_info, context):
         if not content:
             return ''
-        # 0: first element of the returned list.
-        # 1: second element of the (ID, name) tuple.
-        return content.name_get()[0][1]
+        return self._get_object_name(content, context)
 
     def _format_content_text(self, content, field_info, context):
         return content or ''
+
+    def _get_object_name(self, content, context):
+        """Call the "name_get" function of the specified Odoo browse-record
+        object. The "context" parameter is here to ensure proper translations.
+        """
+
+        # 0: first element of the returned list.
+        # 1: second element of the (ID, name) tuple.
+        return content.name_get()[0][1]
