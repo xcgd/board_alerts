@@ -17,12 +17,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+
 from ast import literal_eval
+import datetime
 from lxml import etree
 
 from openerp import exceptions
 from openerp import SUPERUSER_ID
 from openerp.osv import orm
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
 
 
@@ -82,20 +86,16 @@ class board_alerts(orm.Model):
                 'board_alerts: Only 1 ID expected in the '
                 '"get_board_alert_contents" function.'
             )
-
-        if context:
-            prev_contents = context.get('board_alert_contents')
-            if prev_contents:
-                return prev_contents
-            context = context.copy()
-
         uid = ids[0]
 
-        # Inject lang/tz in context for correct l10n
-        user_br = self.browse(cr, SUPERUSER_ID, uid, context)
-        context['lang'] = user_br.lang
-        context['tz'] = user_br.tz
-        context['uid'] = uid
+        if not context:
+            context = {}
+
+        prev_contents = context.get('board_alert_contents')
+        if prev_contents:
+            return prev_contents
+
+        context = self._default_context(cr, uid, context)
 
         act_window_obj = self.pool['ir.actions.act_window']
         board_obj = self.pool['board.board']
@@ -189,6 +189,11 @@ class board_alerts(orm.Model):
                 for field in act_tree.xpath('//field')
                 if not field.attrib.get('invisible')
             ]
+            fields_info = act_model.fields_get(
+                cr, uid,
+                fields,
+                context=context
+            )
 
             # Get data IDs, according to the domain & context defined in the
             # action.
@@ -198,30 +203,32 @@ class board_alerts(orm.Model):
                 context=act_context
             )
 
+            # Add field names at the top of the list.
+            contents = [[fields_info[field]['string'] for field in fields]]
+
             # Fetch the data
-            contents = act_model.export_data(
+            content_data_list = act_model.browse(
                 cr, uid,
                 content_ids,
-                fields,
                 context=act_context
-            )['datas'] or []
+            ) or []
+            contents += [
+                [
+                    self._format_content(
+                        getattr(content_data, field),
+                        fields_info[field],
+                        context
+                    )
+                    for field in fields
+                ]
+                for content_data in content_data_list
+            ]
 
             # Do not send empty content
             if not contents:
                 # XXX Maybe change to a message.
                 # XXX Probably add an option to send the message or not
                 continue
-
-            # Add field names at the top of the list.
-            fields_info = act_model.fields_get(
-                cr, uid,
-                fields,
-                context=context
-            )
-            contents.insert(0, [
-                fields_info[field]['string']
-                for field in fields
-            ])
 
             to_send.append((act_title, contents))
 
@@ -276,9 +283,131 @@ class board_alerts(orm.Model):
                 for field in record:
                     cell = etree.SubElement(row, 'td')
                     cell.attrib['style'] = 'padding: 3px 6px;'
-                    cell.text = (
-                        field if isinstance(field, basestring)
-                        else str(field)
-                    )
+                    cell.text = field
 
         return etree.tostring(root, pretty_print=True)
+
+    def _default_context(self, cr, uid, context):
+        """Get an Odoo context, adapted to the specified user. Contains
+        additional values the "_format_content" function expects.
+        """
+
+        ret = context.copy()
+
+        lang_obj = self.pool['res.lang']
+
+        user = self.browse(cr, SUPERUSER_ID, [uid], context=context)[0]
+
+        # The user object only has a "lang" selection key; find the actual
+        # language object.
+        lang_ids = lang_obj.search(
+            cr, SUPERUSER_ID,
+            [('code', '=', user.lang)],
+            limit=1,
+            context=context
+        )
+        if not lang_ids:
+            raise exceptions.Warning(_('Lang %s not found') % user.lang)
+        lang = lang_obj.browse(cr, SUPERUSER_ID, lang_ids, context=context)[0]
+
+        ret.update({
+            'date_format': lang.date_format,
+            'datetime_format': '%s %s' % (lang.date_format, lang.time_format),
+            'lang': user.lang,
+            'tz': user.tz,
+            'uid': uid,
+        })
+
+        return ret
+
+    def _format_content(self, content, field_info, context):
+        """Stringify the specified field value, taking care of translations and
+        fetching related names.
+        @type content: Odoo browse-record object.
+        @param field_info: Odoo field information.
+        @param context: Odoo context; must define the following:
+            * date_format.
+            * datetime_format.
+        @rtype: String.
+        """
+
+        # Delegate to per-type functions.
+        return getattr(
+            self,
+            '_format_content_%s' % field_info['type'],
+            lambda content, *args: str(content)
+        )(
+            content, field_info, context
+        )
+
+    def _format_content_boolean(self, content, field_info, context):
+        return _('Yes') if content else _('No')
+
+    def _format_content_char(self, content, field_info, context):
+        return content or ''
+
+    def _format_content_date(self, content, field_info, context):
+        if not content:
+            return ''
+        return (
+            datetime.datetime.strptime(content, DEFAULT_SERVER_DATE_FORMAT)
+            .strftime(context['date_format'])
+        )
+
+    def _format_content_datetime(self, content, field_info, context):
+        if not content:
+            return ''
+        return (
+            datetime.datetime.strptime(content, DEFAULT_SERVER_DATETIME_FORMAT)
+            .strftime(context['datetime_format'])
+        )
+
+    def _format_content_float(self, content, field_info, context):
+        # TODO Better float formatting (see report_sxw:digits_fmt,
+        # report_sxw:get_digits for details.
+        return str(content or 0.0)
+
+    def _format_content_integer(self, content, field_info, context):
+        return str(content or 0)
+
+    def _format_content_many2many(self, content, field_info, context):
+        if not content:
+            return ''
+        # TODO Simplify the following when a method can be executed on a
+        # "browse_record_list" object (see the TODO near its declaration).
+        return ', '.join(
+            self._get_object_name(linked_content, context)
+            for linked_content in content
+        )
+
+    def _format_content_one2many(self, content, field_info, context):
+        if not content:
+            return ''
+        # TODO Simplify the following when a method can be executed on a
+        # "browse_record_list" object (see the TODO near its declaration).
+        return ', '.join(
+            self._get_object_name(linked_content, context)
+            for linked_content in content
+        )
+
+    def _format_content_selection(self, content, field_info, context):
+        if not content:
+            return ''
+        return dict(field_info['selection']).get(content, '')
+
+    def _format_content_many2one(self, content, field_info, context):
+        if not content:
+            return ''
+        return self._get_object_name(content, context)
+
+    def _format_content_text(self, content, field_info, context):
+        return content or ''
+
+    def _get_object_name(self, content, context):
+        """Call the "name_get" function of the specified Odoo browse-record
+        object. The "context" parameter is here to ensure proper translations.
+        """
+
+        # 0: first element of the returned list.
+        # 1: second element of the (ID, name) tuple.
+        return content.name_get()[0][1]
