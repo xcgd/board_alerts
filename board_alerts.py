@@ -297,7 +297,9 @@ class board_alerts(orm.Model):
 
         # Delegate to per-type functions.
         return getattr(
-            self, '_format_content_%s' % field_info['type'], lambda *a: ''
+            self,
+            '_format_content_%s' % field_info['type'],
+            lambda content, *args: str(content)
         )(
             content, field_info, context
         )
