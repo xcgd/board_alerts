@@ -97,6 +97,13 @@ class board_alerts(orm.Model):
 
         context = self._default_context(cr, uid, context)
 
+        # Only users in the base "employee" group can see boards, so only they
+        # can receive board alerts.
+        if not self.user_has_groups(
+            cr, uid, 'base.group_user', context=context
+        ):
+            return
+
         act_window_obj = self.pool['ir.actions.act_window']
         board_obj = self.pool['board.board']
         data_obj = self.pool['ir.model.data']
