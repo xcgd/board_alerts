@@ -1,3 +1,14 @@
+=======
+History
+=======
+
+.. _8.0.1.7:
+
+8.0.1.7
+~~~~~~~
+
+- Change field name in the alert email.template (changed in odoo 8.0)
+
 Version 1.5
 ~~~~~~~~~~~
 
