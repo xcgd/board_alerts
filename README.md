@@ -23,8 +23,3 @@
 
 * Finally, receive your own alerts by Email every morning.
 
-
-
-
-
-
