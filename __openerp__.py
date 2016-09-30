@@ -20,10 +20,11 @@
 ##############################################################################
 {
     'name': 'Board alerts',
+    'summary': "Send emails at regular intervals to summarize the contents of a dashboard",
     'description': '''
 Send emails at regular intervals to summarize the contents of a dashboard.
 ''',
-    'version': '1.6',
+    'version': '8.0.1.7',
     'category': 'Tools',
     'author': 'XCG Consulting',
     'website': 'http://odoo.consulting/',
