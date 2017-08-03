@@ -1,13 +1,13 @@
-openerp.addons.board_alerts.wizard package
-==========================================
+odoo.addons.board_alerts.wizard package
+=======================================
 
 Submodules
 ----------
 
-openerp.addons.board_alerts.wizard.board_alerts_dlg module
-----------------------------------------------------------
+odoo.addons.board_alerts.wizard.board_alerts_dlg module
+-------------------------------------------------------
 
-.. automodule:: openerp.addons.board_alerts.wizard.board_alerts_dlg
+.. automodule:: odoo.addons.board_alerts.wizard.board_alerts_dlg
     :members:
     :undoc-members:
     :show-inheritance:
@@ -16,7 +16,7 @@ openerp.addons.board_alerts.wizard.board_alerts_dlg module
 Module contents
 ---------------
 
-.. automodule:: openerp.addons.board_alerts.wizard
+.. automodule:: odoo.addons.board_alerts.wizard
     :members:
     :undoc-members:
     :show-inheritance:

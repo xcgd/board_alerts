@@ -1,27 +1,24 @@
-from openerp.osv import orm
+from odoo import api
+from odoo import models
 
 
-class board_alerts_dlg(orm.TransientModel):
+class BoardAlertsDlg(models.TransientModel):
     """Dialog shown before manually sending board alert emails, to have some
     kind of confirmation.
     """
 
     _name = 'board_alerts_dlg'
+    _description = 'Board alert sender dialog box'
 
-    def send_board_alerts(self, cr, uid, ids, context=None):
+    @api.multi
+    def send_board_alerts(self):
+        """Send board alerts then show emails.
+        """
 
-        data_obj = self.pool['ir.model.data']
-        user_obj = self.pool['res.users']
-
-        user_obj.send_board_alerts(cr, uid, context=context)
+        self.env['res.users'].send_board_alerts()
 
         # Find the action launched by the "Emails" menu command.
-        emails_action = data_obj.get_object(
-            cr, uid,
-            'mail',
-            'menu_mail_mail',
-            context=context
-        ).action
+        emails_action = self.env.ref('mail.menu_mail_mail').action
 
         return {
             'context': emails_action.context,

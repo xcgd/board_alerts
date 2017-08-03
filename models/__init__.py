@@ -1,2 +1,3 @@
 # flake8: noqa
-import board_alerts
+
+from . import board_alerts

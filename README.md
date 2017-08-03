@@ -1,7 +1,7 @@
 # README #
 
 
-### Create your own Odoo/OpenERP notifications ###
+### Create your own Odoo notifications ###
 
 
 * Create your own notifications based on the content of your activity.
@@ -17,7 +17,7 @@
 
 ![Create](static/src/img/board_view_odoo.png)
 
-* Then, see your alerts in Odoo/OpenERP:
+* Then, see your alerts in Odoo:
 
 ![Show](static/src/img/dashboard_odoo.png)
 

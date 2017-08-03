@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Board Alerts, for OpenERP
+#    Board Alerts, for Odoo
 #    Copyright (C) 2013 XCG Consulting (http://odoo.consulting)
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,23 +20,27 @@
 ##############################################################################
 {
     'name': 'Board alerts',
-    'summary': "Send emails at regular intervals to summarize the contents of a dashboard",
     'description': '''
 Send emails at regular intervals to summarize the contents of a dashboard.
 ''',
-    'version': '8.0.1.7',
+    'version': '10.0.1.7',
     'category': 'Tools',
     'author': 'XCG Consulting',
     'website': 'http://odoo.consulting/',
     'depends': [
         'board',
-        'email_template',
+        'mail',
+        'web',
     ],
     'data': [
         'data/alert_board.xml',
         'data/board_alerts_email_template.xml',
         'data/board_alerts_cron_task.xml',
+        'views/board_alerts_assets.xml',
         'wizard/board_alerts_dlg.xml',
+    ],
+    'qweb': [
+        'qweb/alert_board.xml',
     ],
     'installable': True,
 }

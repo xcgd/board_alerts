@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data noupdate="1">
 
         <!-- Define the board the user can drag views into that will be used to send 
@@ -31,7 +31,7 @@
                   </p><p>
                     To add your first report into this dashboard, go to any
                     menu, switch to list or graph view, and click <i>'Add to
-                    Dashboard'</i> in the extended search options.
+                    alert dashboard'</i> in the extended search options.
                   </p><p>
                     You can filter and group data before inserting into the
                     dashboard using the search options.
@@ -44,4 +44,4 @@
             action="action_alert_board" sequence="6" />
 
     </data>
-</openerp>
+</odoo>

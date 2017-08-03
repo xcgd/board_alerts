@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Include assets used by alert boards. -->
+
+    <template id="assets_backend" name="board_alerts assets"
+        inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/board_alerts/static/src/less/alert_board.less" />
+            <script type="text/javascript" src="/board_alerts/static/src/js/alert_board.js"></script>
+        </xpath>
+    </template>
+
+</odoo>

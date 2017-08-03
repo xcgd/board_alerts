@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data noupdate="1">
 
         <!-- Default email template for board alert emails. -->
 
-        <record id="board_alerts_email_template" model="email.template">
+        <record id="board_alerts_mail_template" model="mail.template">
             <field name="body_html"><![CDATA[
                 <p>Hello ${ object.name },</p>
                 <p>Here follow your alerts for today.</p>
@@ -20,4 +20,4 @@
         </record>
 
     </data>
-</openerp>
+</odoo>

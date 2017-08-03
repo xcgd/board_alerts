@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
 
-        <!-- Dialog shown before manually sending board alert emails, to have some 
+        <!-- Dialog shown before manually sending board alert emails, to have some
             kind of confirmation. -->
 
         <record id="board_alerts_dlg" model="ir.ui.view">
@@ -13,7 +13,7 @@
 
                     <footer>
                         <separator
-                            string="Warning! Emails will be sent when clicking on the red button." />
+                            string="Warning! Emails will be sent when clicking on the &quot;Send board alerts&quot; button." />
 
                         <button string="Send board alerts" name="send_board_alerts"
                             type="object" class="oe_highlight" />
@@ -38,4 +38,4 @@
             id="menu_board_alerts_dlg" parent="base.menu_reporting_config"
             groups="base.group_no_one" sequence="10" />
     </data>
-</openerp>
+</odoo>

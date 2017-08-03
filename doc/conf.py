@@ -16,7 +16,7 @@ import ConfigParser
 import sys
 import os
 
-import openerp
+import odoo
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -58,7 +58,7 @@ master_doc = 'index'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-with open(os.path.join('..', '__openerp__.py'), 'r') as f:
+with open(os.path.join('..', '__manifest__.py'), 'r') as f:
     read_data = f.read()
 d = ast.literal_eval(read_data)
 # The full version, including alpha/beta/rc tags.
@@ -312,20 +312,12 @@ intersphinx_mapping = {'https://docs.python.org/2/': None}
 this_module = os.path.basename(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sphinxodoo_addons = [this_module, ]
 # sphinxodoo_root_path : Path of the Odoo root directory
-sphinxodoo_root_path = os.path.dirname(os.path.dirname(os.path.abspath(openerp.__file__)))
+sphinxodoo_root_path = os.path.dirname(os.path.dirname(os.path.abspath(odoo.__file__)))
 # sphinxodoo_addons_path : List of paths were Odoo addons to load are located
 superproject_path = os.path.dirname(os.path.dirname(os.path.dirname(os.getenv('PWD'))))
 c = ConfigParser.ConfigParser()
 c.read(os.path.join(superproject_path, 'setup.cfg'))
-odoo_type = c.get('odoo_scripts', 'odoo_type', 'odoo8')
-sphinxodoo_addons_path = []
-if odoo_type.strip() == 'bzr':
-    sphinxodoo_addons_path.append(os.path.join(os.getenv('HOME'), 'src', 'openobject-addons'))
-    sphinxodoo_addons_path.append(os.path.join(os.getenv('HOME'), 'src', 'openerp-web', 'addons'))
-else:
-    sphinxodoo_addons_path.append(os.path.join(sphinxodoo_root_path, 'addons'))
+sphinxodoo_addons_path = [os.path.join(sphinxodoo_root_path, 'addons')]
 
 for line in c.get('odoo_scripts', 'addon_dirs', '').splitlines():
-    print "addon_dirs lines"+line
     sphinxodoo_addons_path.append(os.path.join(superproject_path, line))
-

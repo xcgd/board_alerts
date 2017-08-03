@@ -1,13 +1,13 @@
-openerp.addons.board_alerts.models package
-==========================================
+odoo.addons.board_alerts.models package
+=======================================
 
 Submodules
 ----------
 
-openerp.addons.board_alerts.models.board_alerts module
-------------------------------------------------------
+odoo.addons.board_alerts.models.board_alerts module
+---------------------------------------------------
 
-.. automodule:: openerp.addons.board_alerts.models.board_alerts
+.. automodule:: odoo.addons.board_alerts.models.board_alerts
     :members:
     :undoc-members:
     :show-inheritance:
@@ -16,7 +16,7 @@ openerp.addons.board_alerts.models.board_alerts module
 Module contents
 ---------------
 
-.. automodule:: openerp.addons.board_alerts.models
+.. automodule:: odoo.addons.board_alerts.models
     :members:
     :undoc-members:
     :show-inheritance:

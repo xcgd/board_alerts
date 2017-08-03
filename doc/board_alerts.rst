@@ -12,7 +12,7 @@ Subpackages
 Module contents
 ---------------
 
-.. automodule:: openerp.addons.board_alerts
+.. automodule:: odoo.addons.board_alerts
     :members:
     :undoc-members:
     :show-inheritance:

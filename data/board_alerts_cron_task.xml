@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data noupdate="1">
 
         <!-- Cron task to send board alert emails every morning at 07H00. -->
@@ -18,4 +18,4 @@
         </record>
 
     </data>
-</openerp>
+</odoo>

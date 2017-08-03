@@ -1,0 +1,21 @@
+<!-- QWeb template for the alert board. -->
+
+<template>
+
+    <!-- Include a link in the "Favorites" menu to add to the alert dashboard. Same
+        as the default "Add to my dashboard" link defined in
+        odoo/addons/board/static/src/xml/board.xml. -->
+    <t t-name="SearchView.add_to_alert_dashboard">
+        <li class="o_add_to_alert_dashboard_link o_closed_menu">
+            <a href="#">Add to the alert dashboard</a>
+        </li>
+        <li class="o_add_to_alert_dashboard">
+            <input class="o_add_to_alert_dashboard_input" type="text" />
+        </li>
+        <li class="o_add_to_alert_dashboard">
+            <button type="button"
+                class="btn btn-primary btn-sm o_add_to_alert_dashboard_button">Add</button>
+        </li>
+    </t>
+
+</template>

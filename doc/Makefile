@@ -193,5 +193,5 @@ pseudoxml:
 autotodo:
 	@python autotodo.py ../ .py TODO,FIXME,XXX
 
-manifest: ../__openerp__.py manifest.py
+manifest: ../__manifest__.py manifest.py
 	@python manifest.py
