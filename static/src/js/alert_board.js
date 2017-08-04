@@ -3,7 +3,7 @@
 /* Taken from the default "My board" dashboard.
  * Ref: odoo/addons/board/static/js/dashboard.js.
  *
- * Adapted to add an "Add to the alert board" menu command.
+ * Adapted to add an "Add to my alert board" menu command.
  */
 
 odoo
@@ -126,7 +126,7 @@ odoo
                                         data_manager.invalidate();
                                     } else {
                                         self
-                                            .do_warn(_t("Could not add filter to dashboard"));
+                                            .do_warn(_t("Could not add filter to alert dashboard"));
                                     }
                                 });
                     },
