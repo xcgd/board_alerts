@@ -40,7 +40,7 @@ Send emails at regular intervals to summarize the contents of a dashboard.
         'wizard/board_alerts_dlg.xml',
     ],
     'qweb': [
-        'qweb/alert_board.xml',
+        'static/src/xml/alert_board.xml',
     ],
     'installable': True,
 }
