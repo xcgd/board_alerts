@@ -4,48 +4,23 @@
 # Vincent Hatakeyama <vincent.lhote@xcg-consulting.fr>, 2015.
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenERP Server 7.0\n"
+"Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-26 11:56+0000\n"
-"PO-Revision-Date: 2015-02-26 12:57+0200\n"
-"Last-Translator: Vincent Hatakeyama <vincent.lhote@xcg-consulting.fr>\n"
+"POT-Creation-Date: 2017-08-04 11:29+0200\n"
+"PO-Revision-Date: 2017-08-04 11:30+0200\n"
+"Last-Translator: Houzéfa Abbasbhay <houzefa.abba@xcg-consulting.fr>\n"
 "Language-Team: XCG Consulting\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Poedit 1.8.7.1\n"
 
 #. module: board_alerts
-#: model:ir.model,name:board_alerts.model_res_users
-msgid "Users"
-msgstr "Utilisateurs"
-
-#. module: board_alerts
-#: code:addons/board_alerts/board_alerts.py:219
-#: view:board.board:0
-#: model:ir.actions.act_window,name:board_alerts.action_alert_board
-#: model:ir.ui.menu,name:board_alerts.menu_alert_board
-#, python-format
-msgid "My Alerts"
-msgstr "Mes alertes"
-
-#. module: board_alerts
-#: view:board_alerts_dlg:0
-#: model:ir.actions.act_window,name:board_alerts.action_board_alerts_dlg
-#: model:ir.ui.menu,name:board_alerts.menu_board_alerts_dlg
-msgid "Send board alerts"
-msgstr "Envoyer les alertes des tableaux"
-
-#. module: board_alerts
-#: model:email.template,subject:board_alerts.board_alerts_email_template
-msgid "Today's alerts"
-msgstr "Alertes du jour"
-
-#. module: board_alerts
-#: model:email.template,body_html:board_alerts.board_alerts_email_template
-msgid "\n"
+#: model:mail.template,body_html:board_alerts.board_alerts_mail_template
+msgid ""
+"\n"
 "                <p>Hello ${ object.name },</p>\n"
 "                <p>Here follow your alerts for today.</p>\n"
 "                <div>${ object.get_board_alert_contents() | safe }</div>\n"
@@ -53,73 +28,161 @@ msgid "\n"
 msgstr ""
 "\n"
 "                <p>Bonjour ${ object.name },</p>\n"
-"                <p>Veuillez trouver ci-dessous vos alertes pour "
-"aujourd'hui.</p>\n"
+"                <p>Veuillez trouver ci-dessous vos alertes pour aujourd'hui."
+"</p>\n"
 "                <div>${ object.get_board_alert_contents() | safe }</div>\n"
 "            "
 
 #. module: board_alerts
-#: model:ir.model,name:board_alerts.model_board_alerts_dlg
-msgid "board_alerts_dlg"
-msgstr "board_alerts_dlg"
+#. openerp-web
+#: code:addons/board_alerts/static/src/js/alert_board.js:124
+#, python-format
+msgid "'%s' added to alert dashboard"
+msgstr "'%s' ajouté au tableau de bord des alertes"
 
 #. module: board_alerts
 #: model:ir.actions.act_window,help:board_alerts.action_alert_board
-msgid "<div class=\"oe_empty_custom_dashboard\">\n"
-"                  <p>\n"
-"                    <b>Your alert dashboard is empty.</b>\n"
-"                  </p><p>\n"
-"                    To add your first report into this dashboard, go to any\n"
-"                    menu, switch to list or graph view, and click <i>'Add to\n"
-"                    Dashboard'</i> in the extended search options.\n"
-"                  </p><p>\n"
-"                    You can filter and group data before inserting into the\n"
-"                    dashboard using the search options.\n"
-"                  </p>\n"
-"              </div>\n"
-"            "
-msgstr ""
-"<div class=\"oe_empty_custom_dashboard\">\n"
-"                  <p>\n"
-"                    <b>Votre tableau d'alertes est vide</b>\n"
-"                  </p><p>\n"
-"                    Pour ajouter un premier rapport à ce tableau de bord, "
-"allez dans un\n"
-"                    menu, passez en vue liste ou en vue graphique, et "
-"cliquez sur  <i>\"Ajouter\n"
-"                    au tableau de bord\"</i> dans les options de recherches "
-"étendues.\n"
-"                  </p><p>\n"
-"                    Vous pouvez filtrer et grouper les données avant "
-"d'insérer le rapport dans le\n"
-"                    tableau de bord en utilisant les options de recherche.\n"
-"                  </p>\n"
-"              </div>\n"
-"            "
+msgid "<b>Your alert dashboard is empty.</b>"
+msgstr "<b>Votre tableau de bord d'alertes est vide.</b>"
 
 #. module: board_alerts
-#: view:board_alerts_dlg:0
+#. openerp-web
+#: code:addons/board_alerts/static/src/xml/alert_board.xml:17
+#, python-format
+msgid "Add"
+msgstr "Ajouter"
+
+#. module: board_alerts
+#. openerp-web
+#: code:addons/board_alerts/static/src/xml/alert_board.xml:10
+#, python-format
+msgid "Add to my alert dashboard"
+msgstr "Ajouter à mon tableau d'alertes"
+
+#. module: board_alerts
+#: model:ir.model,name:board_alerts.model_board_alerts_dlg
+msgid "Board alert sender dialog box"
+msgstr "Boîte de dialogue d'envoi d'alertes de tableau de bord"
+
+#. module: board_alerts
+#: model:ir.ui.view,arch_db:board_alerts.board_alerts_dlg
 msgid "Cancel"
 msgstr "Annuler"
 
 #. module: board_alerts
-#: view:board_alerts_dlg:0
-msgid "Warning! Emails will be sent when clicking on the red button."
-msgstr "Attention ! Les emails seront envoyés en cliquant sur le bouton rouge."
+#. openerp-web
+#: code:addons/board_alerts/static/src/js/alert_board.js:129
+#, python-format
+msgid "Could not add filter to alert dashboard"
+msgstr "Le filtre n'a pas pu être ajouté au tableau de bord des alertes"
 
-#~ msgid ""
-#~ "\n"
-#~ "                <p>Hello %(recipient)s,</p>\n"
-#~ "                <p>Here follow your alerts for today.</p>\n"
-#~ "                <div>%(contents)s</div>\n"
-#~ "            "
-#~ msgstr ""
-#~ "\n"
-#~ "                <p>Bonjour %(recipient)s,</p>\n"
-#~ "                <p>Veuillez trouver ci-dessous vos alertes pour "
-#~ "aujourd'hui.</p>\n"
-#~ "                <div>%(contents)s</div>\n"
-#~ "            "
+#. module: board_alerts
+#: model:ir.model.fields,field_description:board_alerts.field_board_alerts_dlg_create_uid
+msgid "Created by"
+msgstr "Créé par"
 
-#~ msgid "Board"
-#~ msgstr "Tableau"
+#. module: board_alerts
+#: model:ir.model.fields,field_description:board_alerts.field_board_alerts_dlg_create_date
+msgid "Created on"
+msgstr "Créé le"
+
+#. module: board_alerts
+#: model:ir.model.fields,field_description:board_alerts.field_board_alerts_dlg_display_name
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#. module: board_alerts
+#: model:ir.model.fields,field_description:board_alerts.field_board_alerts_dlg_id
+msgid "ID"
+msgstr "ID"
+
+#. module: board_alerts
+#: code:addons/board_alerts/models/board_alerts.py:244
+#, python-format
+msgid "Lang %s not found"
+msgstr "Aucune langue %s"
+
+#. module: board_alerts
+#: model:ir.model.fields,field_description:board_alerts.field_board_alerts_dlg___last_update
+msgid "Last Modified on"
+msgstr "Modifié le"
+
+#. module: board_alerts
+#: model:ir.model.fields,field_description:board_alerts.field_board_alerts_dlg_write_uid
+msgid "Last Updated by"
+msgstr "Modifié par"
+
+#. module: board_alerts
+#: model:ir.model.fields,field_description:board_alerts.field_board_alerts_dlg_write_date
+msgid "Last Updated on"
+msgstr "Modifié le"
+
+#. module: board_alerts
+#: code:addons/board_alerts/models/board_alerts.py:190
+#: model:ir.actions.act_window,name:board_alerts.action_alert_board
+#: model:ir.ui.menu,name:board_alerts.menu_alert_board
+#: model:ir.ui.view,arch_db:board_alerts.alert_board
+#, python-format
+msgid "My Alerts"
+msgstr "Mes alertes"
+
+#. module: board_alerts
+#: code:addons/board_alerts/models/board_alerts.py:277
+#, python-format
+msgid "No"
+msgstr "Non"
+
+#. module: board_alerts
+#: model:ir.actions.act_window,name:board_alerts.action_board_alerts_dlg
+#: model:ir.ui.menu,name:board_alerts.menu_board_alerts_dlg
+#: model:ir.ui.view,arch_db:board_alerts.board_alerts_dlg
+msgid "Send board alerts"
+msgstr "Envoyer les alertes des tableaux"
+
+#. module: board_alerts
+#: model:ir.actions.act_window,help:board_alerts.action_alert_board
+msgid ""
+"To add your first report into this dashboard, go to any\n"
+"                    menu, switch to list or graph view, and click <i>'Add "
+"to\n"
+"                    Dashboard'</i> in the extended search options."
+msgstr ""
+"Pour ajouter votre premier rapport dans ce tableau de bord, aller dans\n"
+"                    tout point de menu, placez-vous en vue liste ou graphe, "
+"et cliquez sur <i>'Ajouter à\n"
+"                    mon tableau d'alertes'</i> dans les options de recherche "
+"avancées."
+
+#. module: board_alerts
+#: model:mail.template,subject:board_alerts.board_alerts_mail_template
+msgid "Today's alerts"
+msgstr "Alertes du jour"
+
+#. module: board_alerts
+#: model:ir.model,name:board_alerts.model_res_users
+msgid "Users"
+msgstr "Utilisateurs"
+
+#. module: board_alerts
+#: model:ir.ui.view,arch_db:board_alerts.board_alerts_dlg
+msgid ""
+"Warning! Emails will be sent when clicking on the \"Send board alerts\" "
+"button."
+msgstr ""
+"Attention ! Les emails seront envoyés lors du clic sur le bouton \"Envoyer "
+"les alertes des tableaux\"."
+
+#. module: board_alerts
+#: code:addons/board_alerts/models/board_alerts.py:277
+#, python-format
+msgid "Yes"
+msgstr "Oui"
+
+#. module: board_alerts
+#: model:ir.actions.act_window,help:board_alerts.action_alert_board
+msgid ""
+"You can filter and group data before inserting into the\n"
+"                    dashboard using the search options."
+msgstr ""
+"Vous pouvez filtrer et regrouper les données avant de les insérer dans le\n"
+"                    tableau de bord en utilisant les options de recherche."
