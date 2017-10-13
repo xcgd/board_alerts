@@ -20,7 +20,6 @@
 ##############################################################################
 {
     'name': 'Board alerts',
-    'summary': "Send emails at regular intervals to summarize the contents of a dashboard",
     'description': '''
 Send emails at regular intervals to summarize the contents of a dashboard.
 ''',
