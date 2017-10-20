@@ -21,7 +21,19 @@
 {
     'name': 'Board alerts',
     'description': '''
+Board alerts
+============
+
 Send emails at regular intervals to summarize the contents of a dashboard.
+
+
+Create your own Odoo notifications
+----------------------------------
+
+* Create your own notifications based on the contents of your activity.
+* See your alerts in your dasboard.
+* Receive them automatically by email at regular intervals.
+* The administrator can adjust the email frequency.
 ''',
     'version': '10.0.1.7',
     'category': 'Tools',
