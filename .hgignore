@@ -20,5 +20,6 @@ storage/*
 *.db
 .ropeproject/*
 .mob
-
-
+./doc/_build
+./doc/autotodo
+./doc/manifest
