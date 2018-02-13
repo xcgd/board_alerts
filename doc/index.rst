@@ -6,6 +6,7 @@ Contents:
    :maxdepth: 2
 
    README
+   modules
    HISTORY
    TODO
 
