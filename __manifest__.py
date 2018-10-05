@@ -35,7 +35,7 @@ Create your own Odoo notifications
 * Receive them automatically by email at regular intervals.
 * The administrator can adjust the email frequency.
 ''',
-    'version': '10.0.1.7',
+    'version': '11.0.1.0',
     'category': 'Tools',
     'author': 'XCG Consulting',
     'website': 'http://odoo.consulting/',

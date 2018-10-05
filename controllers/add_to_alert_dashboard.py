@@ -1,7 +1,6 @@
-from odoo.http import Controller
-from odoo.http import request
-from odoo.http import route
 from xml.etree import ElementTree
+
+from odoo.http import Controller, request, route
 
 
 class AddToAlertDashboardController(Controller):

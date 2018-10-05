@@ -13,9 +13,9 @@
 # serve to show the default.
 
 import ast
-import ConfigParser
-import sys
+import configparser
 import os
+import sys
 
 import odoo
 
@@ -69,7 +69,7 @@ version = '.'.join(release.split('.')[:4])
 
 # General information about the project.
 project = d['name']
-copyright = u'2016, XCG Consulting'
+copyright = '2016, XCG Consulting'
 author = d['author']
 module_nospace = project.replace(" ", "")
 module_description = d.get('summary', "")
@@ -238,7 +238,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, '%s.tex' % module_nospace, u'%s Documentation' % project,
+    (master_doc, '%s.tex' % module_nospace, '%s Documentation' % project,
      author, 'manual'),
 ]
 
@@ -268,7 +268,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, module_lowercase, u'%s Documentation' % project,
+    (master_doc, module_lowercase, '%s Documentation' % project,
      [author], 1)
 ]
 
@@ -282,7 +282,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, module_nospace, u'%s Documentation' % project,
+    (master_doc, module_nospace, '%s Documentation' % project,
      author, module_nospace, module_description,
      'Miscellaneous'),
 ]
@@ -316,7 +316,7 @@ sphinxodoo_addons = [this_module, ]
 sphinxodoo_root_path = os.path.dirname(os.path.dirname(os.path.abspath(odoo.__file__)))
 # sphinxodoo_addons_path : List of paths were Odoo addons to load are located
 superproject_path = os.path.dirname(os.path.dirname(os.path.dirname(os.getenv('PWD'))))
-c = ConfigParser.ConfigParser()
+c = configparser.ConfigParser()
 c.read(os.path.join(superproject_path, 'setup.cfg'))
 sphinxodoo_addons_path = [os.path.join(sphinxodoo_root_path, 'addons')]
 

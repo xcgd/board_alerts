@@ -1,5 +1,4 @@
-from odoo import api
-from odoo import models
+from odoo import api, models
 
 
 class BoardAlertsDlg(models.TransientModel):

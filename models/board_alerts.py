@@ -18,15 +18,14 @@
 #
 ###############################################################################
 
-from ast import literal_eval
 import datetime
+from ast import literal_eval
+
 from lxml import etree
-from odoo import _
-from odoo import api
-from odoo import exceptions
-from odoo import models
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+
+from odoo import _, api, exceptions, models
+from odoo.tools import (DEFAULT_SERVER_DATE_FORMAT,
+                        DEFAULT_SERVER_DATETIME_FORMAT)
 
 
 class BoardAlerts(models.Model):
@@ -198,7 +197,7 @@ class BoardAlerts(models.Model):
             )
 
             title = etree.SubElement(frame, 'h3')
-            title.text = data_title or u''
+            title.text = data_title or ''
 
             table = etree.SubElement(frame, 'table')
             table.attrib['style'] = (
