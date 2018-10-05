@@ -1,3 +1,4 @@
+// TODO migration: Implementation in odoo 11 js changed. FIX IT
 /* Alert board. */
 
 /* Taken from the default "My board" dashboard.
