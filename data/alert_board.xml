@@ -9,7 +9,7 @@
             <field name="name">My Alerts</field>
             <field name="model">board.board</field>
             <field name="arch" type="xml">
-                <form string="My Alerts" version="7.0">
+                <form string="My Alerts" >
                     <board style="2-1">
                         <column />
                     </board>
