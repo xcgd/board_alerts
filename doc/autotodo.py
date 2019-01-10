@@ -81,7 +81,7 @@ def write_info(f, infos, folder):
 
 def create_autotodo(folder, todolist):
     with open('autotodo', 'w+') as f:
-        for tag, info in list(todolist.items()):
+        for tag, info in todolist.items():
             f.write("%s\n%s\n\n" % (tag, '=' * len(tag)))
             write_info(f, info, folder)
 
@@ -93,7 +93,7 @@ def scan_folder(xxx_todo_changeme, dirname, names):
         (root, ext) = os.path.splitext(name)
         if ext in exts:
             file_info = scan_file(os.path.join(dirname, name), tags)
-            for tag, info in list(file_info.items()):
+            for tag, info in file_info.items():
                 if info:
                     res[tag].extend(info)
 
