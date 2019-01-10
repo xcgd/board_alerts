@@ -222,7 +222,7 @@ class BoardAlerts(models.Model):
                     cell.attrib['style'] = 'padding: 3px 6px;'
                     cell.text = field
 
-        return etree.tostring(root, pretty_print=True)
+        return etree.tostring(root, encoding='unicode', pretty_print=True)
 
     @api.multi
     def _board_alert_context(self):
