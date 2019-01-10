@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <!-- Define the board the user can drag views into that will be used to send 
-            emails. Imitated from the definition of the "My Dashboard" board in board/board_mydashboard_view.xml. -->
+            emails. Imitated from the definition of the "My Dashboard" board in odoo/addons/board/views/board_views.xml. -->
 
         <record id="alert_board" model="ir.ui.view">
             <field name="name">My Alerts</field>
@@ -40,7 +40,7 @@
             </field>
         </record>
 
-        <menuitem id="menu_alert_board" parent="base.menu_reporting_dashboard"
+        <menuitem id="menu_alert_board" parent="base.menu_board_root"
             action="action_alert_board" sequence="6" />
 
     </data>
