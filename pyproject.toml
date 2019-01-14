@@ -1,0 +1,6 @@
+# See <https://pypi.org/project/black/>.
+
+# black defaults to "line-length = 88"; we prefer "line-length = 79" for now to
+# please our various tools / IDEs / linters.
+[tool.black]
+line-length = 79
