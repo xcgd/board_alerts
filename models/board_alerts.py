@@ -24,14 +24,16 @@ from ast import literal_eval
 from lxml import etree
 
 from odoo import _, api, exceptions, models
-from odoo.tools import (DEFAULT_SERVER_DATE_FORMAT,
-                        DEFAULT_SERVER_DATETIME_FORMAT)
+from odoo.tools import (
+    DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+)
 
 
 class BoardAlerts(models.Model):
     """Inherit from res.users to allow sending email alerts."""
 
-    _inherit = 'res.users'
+    _inherit = "res.users"
 
     @api.model
     def send_board_alerts(self):
@@ -40,7 +42,7 @@ class BoardAlerts(models.Model):
 
         # Get our email template, referenced by its XML ID.
         email_template = self.sudo().env.ref(
-            'board_alerts.board_alerts_mail_template'
+            "board_alerts.board_alerts_mail_template"
         )
 
         # Loop through all users; send them an email.
@@ -53,9 +55,9 @@ class BoardAlerts(models.Model):
 
             # Fill the context to avoid computing contents twice.
             (
-                email_template
-                .with_context(board_alert_contents=contents)
-                .send_mail(user.id)
+                email_template.with_context(
+                    board_alert_contents=contents
+                ).send_mail(user.id)
             )
 
     @api.multi
@@ -68,7 +70,7 @@ class BoardAlerts(models.Model):
         :rtype: String if there is content; None otherwise.
         """
 
-        prev_contents = self.env.context.get('board_alert_contents')
+        prev_contents = self.env.context.get("board_alert_contents")
         if prev_contents:
             return prev_contents
 
@@ -76,7 +78,7 @@ class BoardAlerts(models.Model):
 
         # Only users in the base "employee" group can see boards, so only they
         # can receive board alerts.
-        if not self.user_has_groups('base.group_user'):
+        if not self.user_has_groups("base.group_user"):
             return
 
         # Define an Odoo context adapted to the specified user. Contains
@@ -84,38 +86,38 @@ class BoardAlerts(models.Model):
         self = self.sudo(self).with_context(self._board_alert_context())
 
         # Boards are stored as views; get the one referenced by the XML ID.
-        board_view = self.env.ref('board_alerts.alert_board')
+        board_view = self.env.ref("board_alerts.alert_board")
 
         # Set up the link that will be inserted in emails.
-        board_link = self.env['ir.config_parameter'].get_param('web.base.url')
+        board_link = self.env["ir.config_parameter"].get_param("web.base.url")
         if board_link:
-            board_link += '/?db=%s#action=%s' % (
+            board_link += "/?db=%s#action=%s" % (
                 self.env.cr.dbname,
-                str(self.env.ref('board_alerts.action_alert_board').id),
+                str(self.env.ref("board_alerts.action_alert_board").id),
             )
 
         # Get the "custom view" representing the board.
-        board = self.env['board.board'].fields_view_get(view_id=board_view.id)
+        board = self.env["board.board"].fields_view_get(view_id=board_view.id)
 
         to_send = []
 
         # Loop through "action" tags stored inside this custom view.
-        tree = etree.fromstring(board['arch'])
-        for action in tree.xpath('//action'):
+        tree = etree.fromstring(board["arch"])
+        for action in tree.xpath("//action"):
 
-            if action.attrib['view_mode'] != 'list':
+            if action.attrib["view_mode"] != "list":
                 # Only care about lists for now.
                 continue
-            view_type = 'tree'
+            view_type = "tree"
 
             # Interpret the attributes of the current "action" tag.
-            act_id = int(action.attrib['name'])
-            act_domain = literal_eval(action.attrib['domain'])
-            act_context = literal_eval(action.attrib['context'])
-            act_title = action.attrib['string']
+            act_id = int(action.attrib["name"])
+            act_domain = literal_eval(action.attrib["domain"])
+            act_context = literal_eval(action.attrib["context"])
+            act_title = action.attrib["string"]
 
             # Get the action object pointed to by this "action" tag.
-            act_window = self.env['ir.actions.act_window'].browse(act_id)
+            act_window = self.env["ir.actions.act_window"].browse(act_id)
 
             # Get the model referenced by this "action" tag.
             act_model = self.env[act_window.res_model]
@@ -123,22 +125,28 @@ class BoardAlerts(models.Model):
             # Find the view referenced by this "action" tag; we take the first
             # view that matches, which is correct as they are ordered by
             # priority.
-            act_view_id = self.env['ir.ui.view'].search([
-                ('model', '=', act_window.res_model),
-                ('type', '=', view_type),
-            ], limit=1).id
+            act_view_id = (
+                self.env["ir.ui.view"]
+                .search(
+                    [
+                        ("model", "=", act_window.res_model),
+                        ("type", "=", view_type),
+                    ],
+                    limit=1,
+                )
+                .id
+            )
             act_view = act_model.with_context(act_context).fields_view_get(
-                view_id=act_view_id,
-                view_type=view_type,
+                view_id=act_view_id, view_type=view_type
             )
 
             # Get the fields required by the view. Use this method so that the
             # result is similar to what the user sees in her board.
-            act_tree = etree.fromstring(act_view['arch'])
+            act_tree = etree.fromstring(act_view["arch"])
             fields = [
-                field.attrib['name']
-                for field in act_tree.xpath('//field')
-                if not field.attrib.get('invisible')
+                field.attrib["name"]
+                for field in act_tree.xpath("//field")
+                if not field.attrib.get("invisible")
             ]
             fields_info = act_model.fields_get(fields)
 
@@ -149,14 +157,13 @@ class BoardAlerts(models.Model):
             ) or []
 
             # Add field names at the top of the list.
-            contents = [[fields_info[field]['string'] for field in fields]]
+            contents = [[fields_info[field]["string"] for field in fields]]
 
             # Fetch the data.
             contents += [
                 [
                     self._format_content(
-                        getattr(content_data, field),
-                        fields_info[field],
+                        getattr(content_data, field), fields_info[field]
                     )
                     for field in fields
                 ]
@@ -181,48 +188,46 @@ class BoardAlerts(models.Model):
         :rtype: String.
         """
 
-        root = etree.Element('div')
+        root = etree.Element("div")
 
         if board_link:
-            link = etree.SubElement(etree.SubElement(root, 'h2'), 'a')
-            link.attrib['href'] = board_link
-            link.text = _('My Alerts')
+            link = etree.SubElement(etree.SubElement(root, "h2"), "a")
+            link.attrib["href"] = board_link
+            link.text = _("My Alerts")
 
         for data_title, data in data_list:
-            frame = etree.SubElement(root, 'div')
-            frame.attrib['style'] = (
-                'border: 1px solid LightGray;'
-                'margin-top: 8px;'
-                'padding: 8px;'
+            frame = etree.SubElement(root, "div")
+            frame.attrib["style"] = (
+                "border: 1px solid LightGray;"
+                "margin-top: 8px;"
+                "padding: 8px;"
             )
 
-            title = etree.SubElement(frame, 'h3')
-            title.text = data_title or ''
+            title = etree.SubElement(frame, "h3")
+            title.text = data_title or ""
 
-            table = etree.SubElement(frame, 'table')
-            table.attrib['style'] = (
-                'border-collapse: collapse;'
-                'border-spacing: 2px;'
+            table = etree.SubElement(frame, "table")
+            table.attrib["style"] = (
+                "border-collapse: collapse;" "border-spacing: 2px;"
             )
 
             first_record = True
 
             for record in data:
-                row = etree.SubElement(table, 'tr')
+                row = etree.SubElement(table, "tr")
 
                 if first_record:
                     first_record = False
-                    row.attrib['style'] = (
-                        'background-color: LightGray;'
-                        'font-weight: bolder;'
+                    row.attrib["style"] = (
+                        "background-color: LightGray;" "font-weight: bolder;"
                     )
 
                 for field in record:
-                    cell = etree.SubElement(row, 'td')
-                    cell.attrib['style'] = 'padding: 3px 6px;'
+                    cell = etree.SubElement(row, "td")
+                    cell.attrib["style"] = "padding: 3px 6px;"
                     cell.text = field
 
-        return etree.tostring(root, encoding='unicode', pretty_print=True)
+        return etree.tostring(root, encoding="unicode", pretty_print=True)
 
     @api.multi
     def _board_alert_context(self):
@@ -236,19 +241,24 @@ class BoardAlerts(models.Model):
 
         # The user object only has a "lang" selection key; find the actual
         # language object.
-        lang = self.sudo().env['res.lang'].search(
-            [('code', '=', self.lang)], limit=1,
+        lang = (
+            self.sudo()
+            .env["res.lang"]
+            .search([("code", "=", self.lang)], limit=1)
         )
         if not lang:
-            raise exceptions.Warning(_('Lang %s not found') % self.lang)
+            raise exceptions.Warning(_("Lang %s not found") % self.lang)
 
-        ret.update({
-            'date_format': lang.date_format,
-            'datetime_format': '%s %s' % (lang.date_format, lang.time_format),
-            'lang': self.lang,
-            'tz': self.tz,
-            'uid': self.id,
-        })
+        ret.update(
+            {
+                "date_format": lang.date_format,
+                "datetime_format": "%s %s"
+                % (lang.date_format, lang.time_format),
+                "lang": self.lang,
+                "tz": self.tz,
+                "uid": self.id,
+            }
+        )
 
         return ret
 
@@ -268,31 +278,29 @@ class BoardAlerts(models.Model):
         # Delegate to per-type functions.
         return getattr(
             self,
-            '_format_content_%s' % field_info['type'],
-            lambda content, *args: str(content)
+            "_format_content_%s" % field_info["type"],
+            lambda content, *args: str(content),
         )(content, field_info)
 
     def _format_content_boolean(self, content, field_info):
-        return _('Yes') if content else _('No')
+        return _("Yes") if content else _("No")
 
     def _format_content_char(self, content, field_info):
-        return content or ''
+        return content or ""
 
     def _format_content_date(self, content, field_info):
         if not content:
-            return ''
-        return (
-            datetime.datetime.strptime(content, DEFAULT_SERVER_DATE_FORMAT)
-            .strftime(self.env.context['date_format'])
-        )
+            return ""
+        return datetime.datetime.strptime(
+            content, DEFAULT_SERVER_DATE_FORMAT
+        ).strftime(self.env.context["date_format"])
 
     def _format_content_datetime(self, content, field_info):
         if not content:
-            return ''
-        return (
-            datetime.datetime.strptime(content, DEFAULT_SERVER_DATETIME_FORMAT)
-            .strftime(self.env.context['datetime_format'])
-        )
+            return ""
+        return datetime.datetime.strptime(
+            content, DEFAULT_SERVER_DATETIME_FORMAT
+        ).strftime(self.env.context["datetime_format"])
 
     def _format_content_float(self, content, field_info):
         # TODO Better float formatting (see report_sxw:digits_fmt,
@@ -304,36 +312,34 @@ class BoardAlerts(models.Model):
 
     def _format_content_many2many(self, content, field_info):
         if not content:
-            return ''
+            return ""
         # TODO Simplify the following when a method can be executed on a
         # record list (see the TODO near its declaration).
-        return ', '.join(
-            self._get_object_name(linked_content)
-            for linked_content in content
+        return ", ".join(
+            self._get_object_name(linked_content) for linked_content in content
         )
 
     def _format_content_one2many(self, content, field_info):
         if not content:
-            return ''
+            return ""
         # TODO Simplify the following when a method can be executed on a
         # record list (see the TODO near its declaration).
-        return ', '.join(
-            self._get_object_name(linked_content)
-            for linked_content in content
+        return ", ".join(
+            self._get_object_name(linked_content) for linked_content in content
         )
 
     def _format_content_selection(self, content, field_info):
         if not content:
-            return ''
-        return dict(field_info['selection']).get(content, '')
+            return ""
+        return dict(field_info["selection"]).get(content, "")
 
     def _format_content_many2one(self, content, field_info):
         if not content:
-            return ''
+            return ""
         return self._get_object_name(content)
 
     def _format_content_text(self, content, field_info):
-        return content or ''
+        return content or ""
 
     def _get_object_name(self, content):
         """Call the "name_get" function of the specified Odoo record set.

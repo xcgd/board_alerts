@@ -19,8 +19,8 @@
 #
 ##############################################################################
 {
-    'name': 'Board alerts',
-    'description': '''
+    "name": "Board alerts",
+    "description": """
 Board alerts
 ============
 
@@ -34,25 +34,19 @@ Create your own Odoo notifications
 * See your alerts in your dasboard.
 * Receive them automatically by email at regular intervals.
 * The administrator can adjust the email frequency.
-''',
-    'version': '11.0.1.0',
-    'category': 'Tools',
-    'author': 'XCG Consulting',
-    'website': 'http://odoo.consulting/',
-    'depends': [
-        'board',
-        'mail',
-        'web',
+""",
+    "version": "11.0.1.0",
+    "category": "Tools",
+    "author": "XCG Consulting",
+    "website": "http://odoo.consulting/",
+    "depends": ["board", "mail", "web"],
+    "data": [
+        "data/alert_board.xml",
+        "data/board_alerts_email_template.xml",
+        "data/board_alerts_cron_task.xml",
+        "views/board_alerts_assets.xml",
+        "wizard/board_alerts_dlg.xml",
     ],
-    'data': [
-        'data/alert_board.xml',
-        'data/board_alerts_email_template.xml',
-        'data/board_alerts_cron_task.xml',
-        'views/board_alerts_assets.xml',
-        'wizard/board_alerts_dlg.xml',
-    ],
-    'qweb': [
-        'static/src/xml/alert_board.xml',
-    ],
-    'installable': True,
+    "qweb": ["static/src/xml/alert_board.xml"],
+    "installable": True,
 }

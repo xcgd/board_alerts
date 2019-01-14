@@ -30,8 +30,8 @@ def main():
         sys.exit(1)
 
     folder = sys.argv[1]
-    exts = sys.argv[2].split(',')
-    tags = sys.argv[3].split(',')
+    exts = sys.argv[2].split(",")
+    tags = sys.argv[3].split(",")
     todolist = {tag: [] for tag in tags}
 
     os.path.walk(folder, scan_folder, (exts, tags, todolist))
@@ -52,9 +52,8 @@ def write_info(f, infos, folder):
         path = i[0]
         line = i[1]
         lines = (line - 3, line + 4)
-        class_name = (
-            ":class:`%s`" %
-            os.path.basename(os.path.splitext(path)[0])
+        class_name = ":class:`%s`" % os.path.basename(
+            os.path.splitext(path)[0]
         )
         f.write(
             "%s\n"
@@ -64,13 +63,13 @@ def write_info(f, infos, folder):
             "\t\t:language: python\n"
             "\t\t:lines: %s-%s\n"
             "\t\t:emphasize-lines: %s\n"
-            %
-            (
+            % (
                 class_name,
                 "-" * len(class_name),
                 line,
                 path,
-                lines[0], lines[1],
+                lines[0],
+                lines[1],
                 line,
             )
         )
@@ -80,9 +79,9 @@ def write_info(f, infos, folder):
 
 
 def create_autotodo(folder, todolist):
-    with open('autotodo', 'w+') as f:
+    with open("autotodo", "w+") as f:
         for tag, info in todolist.items():
-            f.write("%s\n%s\n\n" % (tag, '=' * len(tag)))
+            f.write("%s\n%s\n\n" % (tag, "=" * len(tag)))
             write_info(f, info, folder)
 
 
@@ -100,7 +99,7 @@ def scan_folder(xxx_todo_changeme, dirname, names):
 
 def scan_file(filename, tags):
     res = {tag: [] for tag in tags}
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         for line_num, line in enumerate(f):
             for tag in tags:
                 if tag in line:

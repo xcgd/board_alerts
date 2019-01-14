@@ -23,11 +23,11 @@ import ast
 
 
 def main():
-    with open('../__manifest__.py', 'r') as f:
+    with open("../__manifest__.py", "r") as f:
         read_data = f.read()
     d = ast.literal_eval(read_data)
-    with open('manifest', 'w') as out:
-        out.write(d['description'])
+    with open("manifest", "w") as out:
+        out.write(d["description"])
 
 
 if __name__ == "__main__":
