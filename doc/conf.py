@@ -14,8 +14,8 @@
 
 import ast
 import ConfigParser
-import sys
 import os
+import sys
 
 import odoo
 

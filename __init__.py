@@ -1,5 +1,3 @@
 # flake8: noqa
 
-from . import controllers
-from . import models
-from . import wizard
+from . import controllers, models, wizard
