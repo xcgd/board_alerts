@@ -306,32 +306,34 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-todo_include_todos = True
-
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"https://docs.python.org/2/": None}
+intersphinx_mapping = {"https://docs.python.org/3/": None}
 
 
 #
 # odoo-sphinx-autodoc
 #
 
-# sphinxodoo_addons : List of addons name to load (if empty, no addon will be loaded)
+# sphinxodoo_addons: Names of addons to load
 this_module = os.path.basename(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
 sphinxodoo_addons = [this_module]
-# sphinxodoo_root_path : Path of the Odoo root directory
+# sphinxodoo_root_path: Path of the Odoo root directory
 sphinxodoo_root_path = os.path.dirname(
     os.path.dirname(os.path.abspath(odoo.__file__))
 )
-# sphinxodoo_addons_path : List of paths were Odoo addons to load are located
+# sphinxodoo_addons_path: List of paths were Odoo addons to load are located
 superproject_path = os.path.dirname(
     os.path.dirname(os.path.dirname(os.getenv("PWD")))
 )
 c = configparser.ConfigParser()
 c.read(os.path.join(superproject_path, "setup.cfg"))
-sphinxodoo_addons_path = [os.path.join(sphinxodoo_root_path, "addons")]
+sphinxodoo_addons_path = []
 
-for line in c.get("odoo_scripts", "addon_dirs", "").splitlines():
+addon_dirs = set(
+    os.path.dirname(path)
+    for path in c.get("odoo_scripts", "modules").split())
+
+for line in addon_dirs:
     sphinxodoo_addons_path.append(os.path.join(superproject_path, line))

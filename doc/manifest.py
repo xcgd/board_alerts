@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ###############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2016 XCG Consulting (http://www.xcg-consulting.fr/)
+#    Copyright (C) 2016, 2018 XCG Consulting (http://www.xcg-consulting.fr/)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,16 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+import os
 
-import ast
+from odoo.modules import load_information_from_description_file
 
 
 def main():
-    with open("../__manifest__.py", "r") as f:
-        read_data = f.read()
-    d = ast.literal_eval(read_data)
+    module = os.path.basename(os.path.dirname(os.path.dirname(
+        os.path.realpath(__file__))))
+    d = load_information_from_description_file(module)
     with open("manifest", "w") as out:
-        out.write(d["description"])
+        manifest_content = (
+            d["description"]
+            if "description" in d
+            else d["summary"] if "summary" in d else "")
+        out.write(manifest_content)
 
 
 if __name__ == "__main__":

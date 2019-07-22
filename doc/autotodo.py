@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2014 XCG Consulting
+#    Copyright (C) 2014, 2018 XCG Consulting
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,8 @@ def main():
     tags = sys.argv[3].split(",")
     todolist = {tag: [] for tag in tags}
 
-    os.path.walk(folder, scan_folder, (exts, tags, todolist))
+    for root, dirs, files in os.walk(folder):
+        scan_folder((exts, tags, todolist), root, files)
     create_autotodo(folder, todolist)
 
 
@@ -63,7 +64,8 @@ def write_info(f, infos, folder):
             "\t\t:language: python\n"
             "\t\t:lines: %s-%s\n"
             "\t\t:emphasize-lines: %s\n"
-            % (
+            %
+            (
                 class_name,
                 "-" * len(class_name),
                 line,
@@ -85,8 +87,8 @@ def create_autotodo(folder, todolist):
             write_info(f, info, folder)
 
 
-def scan_folder(xxx_todo_changeme, dirname, names):
-    (exts, tags, res) = xxx_todo_changeme
+def scan_folder(data_tuple, dirname, names):
+    (exts, tags, res) = data_tuple
     file_info = {}
     for name in names:
         (root, ext) = os.path.splitext(name)

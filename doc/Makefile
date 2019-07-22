@@ -190,8 +190,8 @@ pseudoxml:
 	@echo
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
 
-autotodo:
-	@python autotodo.py ../ .py TODO,FIXME,XXX
+autotodo: autotodo.py
+	@./autotodo.py ../ .py TODO,FIXME,XXX
 
 manifest: ../__manifest__.py manifest.py
-	@python manifest.py
+	@./manifest.py
