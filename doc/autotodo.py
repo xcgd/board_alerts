@@ -64,8 +64,7 @@ def write_info(f, infos, folder):
             "\t\t:language: python\n"
             "\t\t:lines: %s-%s\n"
             "\t\t:emphasize-lines: %s\n"
-            %
-            (
+            % (
                 class_name,
                 "-" * len(class_name),
                 line,

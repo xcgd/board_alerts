@@ -332,8 +332,8 @@ c.read(os.path.join(superproject_path, "setup.cfg"))
 sphinxodoo_addons_path = []
 
 addon_dirs = set(
-    os.path.dirname(path)
-    for path in c.get("odoo_scripts", "modules").split())
+    os.path.dirname(path) for path in c.get("odoo_scripts", "modules").split()
+)
 
 for line in addon_dirs:
     sphinxodoo_addons_path.append(os.path.join(superproject_path, line))
