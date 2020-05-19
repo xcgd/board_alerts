@@ -1,4 +1,4 @@
-Board alerts
+Board Alerts
 ============
 
 Send emails at regular intervals to summarize the contents of a dashboard.

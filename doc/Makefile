@@ -13,7 +13,7 @@ ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
 endif
 
 project:=$(shell basename $(shell readlink -f ..))
-branch:=$(shell hg branch)
+branch:=$(shell hg identify --branch)
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4

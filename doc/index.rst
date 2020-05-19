@@ -7,7 +7,7 @@ Contents:
 
    README
    modules
-   HISTORY
+   NEWS
    TODO
 
 Indices and tables
