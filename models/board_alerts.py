@@ -89,7 +89,9 @@ class BoardAlerts(models.Model):
         board_view = self.env.ref("board_alerts.alert_board")
 
         # Set up the link that will be inserted in emails.
-        board_link = self.env["ir.config_parameter"].get_param("web.base.url")
+        board_link = (
+            self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+        )
         if board_link:
             board_link += "/?db=%s#action=%s" % (
                 self.env.cr.dbname,
