@@ -18,16 +18,11 @@
 #
 ###############################################################################
 
-import datetime
 from ast import literal_eval
 
 from lxml import etree
 
 from odoo import _, api, exceptions, models
-from odoo.tools import (
-    DEFAULT_SERVER_DATE_FORMAT,
-    DEFAULT_SERVER_DATETIME_FORMAT,
-)
 
 
 class BoardAlerts(models.Model):
@@ -60,7 +55,6 @@ class BoardAlerts(models.Model):
                 ).send_mail(user.id)
             )
 
-    @api.multi
     def get_board_alert_contents(self):
         """Get the HTML content to be put inside a board alert email.
         A board is stored as a custom view; read it, find the actions it
@@ -83,7 +77,7 @@ class BoardAlerts(models.Model):
 
         # Define an Odoo context adapted to the specified user. Contains
         # additional values the "_format_content" function expects.
-        self = self.sudo(self).with_context(self._board_alert_context())
+        self = self.with_user(self).with_context(self._board_alert_context())
 
         # Boards are stored as views; get the one referenced by the XML ID.
         board_view = self.env.ref("board_alerts.alert_board")
@@ -231,7 +225,6 @@ class BoardAlerts(models.Model):
 
         return etree.tostring(root, encoding="unicode", pretty_print=True)
 
-    @api.multi
     def _board_alert_context(self):
         """Define an Odoo context adapted to the specified user. Contains
         additional values the "_format_content" function expects.
@@ -249,10 +242,14 @@ class BoardAlerts(models.Model):
             .search([("code", "=", self.lang)], limit=1)
         )
         if not lang:
-            raise exceptions.Warning(_("Lang %s not found") % self.lang)
+            raise exceptions.UserError(_("Lang %s not found") % self.lang)
 
         ret.update(
             {
+                # We send on behalf of other users; update this company checker
+                # normally included into the HTTP request.
+                "allowed_company_ids": self.company_ids.ids,
+                # ---
                 "date_format": lang.date_format,
                 "datetime_format": "%s %s"
                 % (lang.date_format, lang.time_format),
@@ -293,16 +290,12 @@ class BoardAlerts(models.Model):
     def _format_content_date(self, content, field_info):
         if not content:
             return ""
-        return datetime.datetime.strptime(
-            content, DEFAULT_SERVER_DATE_FORMAT
-        ).strftime(self.env.context["date_format"])
+        return content.strftime(self.env.context["date_format"])
 
     def _format_content_datetime(self, content, field_info):
         if not content:
             return ""
-        return datetime.datetime.strptime(
-            content, DEFAULT_SERVER_DATETIME_FORMAT
-        ).strftime(self.env.context["datetime_format"])
+        return content.strftime(self.env.context["datetime_format"])
 
     def _format_content_float(self, content, field_info):
         # TODO Better float formatting (see report_sxw:digits_fmt,

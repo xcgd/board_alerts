@@ -1,41 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
 
-        <!-- Dialog shown before manually sending board alert emails, to have some
-            kind of confirmation. -->
+    <!-- Dialog shown before manually sending board alert emails, to have some
+        kind of confirmation. -->
 
-        <record id="board_alerts_dlg" model="ir.ui.view">
-            <field name="name">Send board alerts</field>
-            <field name="model">board_alerts_dlg</field>
-            <field name="arch" type="xml">
-                <form string="Send board alerts" >
+    <record id="board_alerts_dlg" model="ir.ui.view">
+        <field name="name">Send board alerts</field>
+        <field name="model">board_alerts_dlg</field>
+        <field name="arch" type="xml">
+            <form>
 
-                    <footer>
-                        <separator
-                            string="Warning! Emails will be sent when clicking on the &quot;Send board alerts&quot; button." />
+                <footer>
+                    <separator
+                        string="Warning! Emails will be sent when clicking on the &quot;Send board alerts&quot; button." />
 
-                        <button string="Send board alerts" name="send_board_alerts"
-                            type="object" class="oe_highlight" />
-                        <button string="Cancel" class="oe_link" special="cancel" />
-                    </footer>
+                    <button string="Send board alerts" name="send_board_alerts"
+                        type="object" class="oe_highlight" />
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
 
-                </form>
-            </field>
-        </record>
+            </form>
+        </field>
+    </record>
 
-        <record id="action_board_alerts_dlg" model="ir.actions.act_window">
-            <field name="name">Send board alerts</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">board_alerts_dlg</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">form</field>
-            <field name="view_id" ref="board_alerts_dlg" />
-            <field name="target">new</field>
-        </record>
+    <record id="action_board_alerts_dlg" model="ir.actions.act_window">
+        <field name="name">Send board alerts</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">board_alerts_dlg</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="board_alerts_dlg" />
+        <field name="target">new</field>
+    </record>
 
-        <menuitem name="Send board alerts" action="action_board_alerts_dlg"
-            id="menu_board_alerts_dlg" parent="base.menu_reporting_config"
-            groups="base.group_no_one" sequence="10" />
-    </data>
+    <menuitem id="menu_board_alerts_dlg" action="action_board_alerts_dlg"
+        parent="base.menu_reporting_config" sequence="10" groups="base.group_no_one" />
+
 </odoo>

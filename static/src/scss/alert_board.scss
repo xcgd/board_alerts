@@ -1,0 +1,9 @@
+// Taken from default "My board" dashboard styles.
+// Ref: odoo/addons/board/static/src/scss/dashboard.scss.
+
+// Adapted to add an "Add to my alert dashboard" menu command.
+
+.o_add_to_alert_dashboard {
+    display: none; // hidden by default
+    @include o-search-options-dropdown-custom-item;
+}

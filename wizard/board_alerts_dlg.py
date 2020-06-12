@@ -1,4 +1,4 @@
-from odoo import api, models
+from odoo import models
 
 
 class BoardAlertsDlg(models.TransientModel):
@@ -9,7 +9,6 @@ class BoardAlertsDlg(models.TransientModel):
     _name = "board_alerts_dlg"
     _description = "Board alert sender dialog box"
 
-    @api.multi
     def send_board_alerts(self):
         """Send board alerts then show emails.
         """
@@ -27,5 +26,4 @@ class BoardAlertsDlg(models.TransientModel):
             "target": emails_action.target,
             "type": emails_action.type,
             "view_mode": emails_action.view_mode,
-            "view_type": emails_action.view_type,
         }
